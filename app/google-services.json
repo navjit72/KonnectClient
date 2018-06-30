@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "748049893767",
+    "firebase_url": "https://konnect-d1454.firebaseio.com",
+    "project_id": "konnect-d1454",
+    "storage_bucket": "konnect-d1454.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:748049893767:android:3b965d959f3397ce",
+        "android_client_info": {
+          "package_name": "com.example.navjit.konnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "748049893767-snihmv6qtknf0k0go3avqh29d3anb268.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.navjit.konnect",
+            "certificate_hash": "48458d1f9e858be48192473c39c183e509932b7e"
+          }
+        },
+        {
+          "client_id": "748049893767-tsvn76segr24vtpe507i85o9ja873nvt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4TLycPuqgmqYHXVcLK3AuayQv4mmCLgE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "748049893767-tsvn76segr24vtpe507i85o9ja873nvt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
