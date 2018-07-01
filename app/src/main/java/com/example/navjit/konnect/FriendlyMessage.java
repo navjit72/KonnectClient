@@ -7,16 +7,18 @@ public class FriendlyMessage {
     private String name;
     private String photoUrl;
     private String imageUrl;
-    private int threadId;
+    private String threadId;
 
     public FriendlyMessage() {
+
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl, String imageUrl) {
+    public FriendlyMessage(String text, String name, String photoUrl, String imageUrl,String threadId) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
         this.imageUrl = imageUrl;
+        this.threadId=threadId;
     }
 
     public String getId() {
@@ -58,4 +60,8 @@ public class FriendlyMessage {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public String getThreadId() { return threadId; }
+
+    public void setThreadId(String threadId) { this.threadId = threadId; }
 }

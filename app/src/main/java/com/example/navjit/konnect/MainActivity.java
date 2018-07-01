@@ -49,6 +49,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.appindexing.Action;
@@ -61,7 +62,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -75,6 +78,8 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
+    private static final String THREAD_ID = "T101";
+
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
@@ -103,7 +108,7 @@ public class MainActivity extends AppCompatActivity
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
     private GoogleApiClient mGoogleApiClient;
-    private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
+    //private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -137,13 +142,12 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build();
+        mUsername = "Konnect user";
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+//                .addApi(Auth.GOOGLE_SIGN_IN_API)
+//                .build();
 
-        // Initialize ProgressBar and RecyclerView.
-        // mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         //Modify your MainActivity's onCreate method by replacing mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         // with the code defined below. This code initially adds all existing messages and then listens for new child
@@ -156,11 +160,64 @@ public class MainActivity extends AppCompatActivity
             public FriendlyMessage parseSnapshot(DataSnapshot dataSnapshot) {
                 FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
                 if (friendlyMessage != null) {
-                    friendlyMessage.setId(dataSnapshot.getKey());
+                        friendlyMessage.setId(dataSnapshot.getKey());
                 }
                 return friendlyMessage;
             }
         };
+
+        mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DataSnapshot loginSnap = dataSnapshot.child("login");
+                Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
+                ArrayList<Login> loginDetails = new ArrayList<>();
+
+                for(DataSnapshot snap : loginChildren){
+                    Login login = snap.getValue(Login.class);
+                    //Log.d("login child","login Username : " + login.getUserName());
+                    loginDetails.add(login);
+                }
+                for(Login l : loginDetails)
+                {
+                    Log.d("login test","Username :" + l.getUserName() + " Firstname :" + l.getFirstName());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
+        //DatabaseReference loginRef = mFirebaseDatabaseReference.child("login");
+//        SnapshotParser<Login> loginParser = new SnapshotParser<Login>() {
+//            @Override
+//            public Login parseSnapshot(DataSnapshot snapshot) {
+//                Login loginDetails = snapshot.getValue(Login.class);
+//                if(loginDetails !=null ){
+//                    loginDetails.setId(Integer.parseInt(snapshot.getKey()));
+//                }
+//                Log.d("Hi","Login Details " + loginDetails.getUserName());
+//                return loginDetails;
+//            }
+//        };
+
+//        loginRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                //Login login = dataSnapshot.getValue(Login.class);
+//                for (DataSnapshot snap: dataSnapshot.getChildren()) {
+//                    Log.e(snap.getKey(),"Login Children : " + snap.getChildrenCount());
+//                }
+//                //Log.d("Login","Login snapshot "+login.getUserName());
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         DatabaseReference messagesRef = mFirebaseDatabaseReference.child(MESSAGES_CHILD);
         FirebaseRecyclerOptions<FriendlyMessage> options =
@@ -173,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
                 return new MessageViewHolder(inflater.inflate(R.layout.item_message, viewGroup, false));
             }
+
             @Override
             protected void onBindViewHolder(final MessageViewHolder viewHolder,
                                             int position,
@@ -182,6 +240,7 @@ public class MainActivity extends AppCompatActivity
                     viewHolder.messageTextView.setText(friendlyMessage.getText());
                     viewHolder.messageTextView.setVisibility(TextView.VISIBLE);
                     viewHolder.messageImageView.setVisibility(ImageView.GONE);
+
                 } else if (friendlyMessage.getImageUrl() != null) {
                     String imageUrl = friendlyMessage.getImageUrl();
                     if (imageUrl.startsWith("gs://")) {
@@ -207,10 +266,10 @@ public class MainActivity extends AppCompatActivity
                                 .load(friendlyMessage.getImageUrl())
                                 .into(viewHolder.messageImageView);
                     }
+
                     viewHolder.messageImageView.setVisibility(ImageView.VISIBLE);
                     viewHolder.messageTextView.setVisibility(TextView.GONE);
                 }
-
 
                 viewHolder.messengerTextView.setText(friendlyMessage.getName());
                 if (friendlyMessage.getPhotoUrl() == null) {
@@ -221,7 +280,6 @@ public class MainActivity extends AppCompatActivity
                             .load(friendlyMessage.getPhotoUrl())
                             .into(viewHolder.messengerImageView);
                 }
-
             }
         };
 
@@ -246,7 +304,6 @@ public class MainActivity extends AppCompatActivity
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
 
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
-
 
 
         mLinearLayoutManager = new LinearLayoutManager(this);
@@ -285,7 +342,7 @@ public class MainActivity extends AppCompatActivity
                         FriendlyMessage(mMessageEditText.getText().toString(),
                         mUsername,
                         mPhotoUrl,
-                        null /* no image */);
+                        null /* no image */, THREAD_ID);
                 mFirebaseDatabaseReference.child(MESSAGES_CHILD)
                         .push().setValue(friendlyMessage);
                 mMessageEditText.setText("");
