@@ -3,6 +3,7 @@
     package="com.example.navjit.konnect">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.navjit.konnect.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignInActivity" />
+        <activity android:name=".CreateMeetingActivity"></activity>
     </application>
 
 </manifest>
