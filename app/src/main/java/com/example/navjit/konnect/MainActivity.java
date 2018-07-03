@@ -130,17 +130,17 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mProgressBar = findViewById(R.id.progressBar);
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        } else {
-            mUsername = mFirebaseUser.getDisplayName();
-            if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-            }
-        }
+//        if (mFirebaseUser == null) {
+//            // Not signed in, launch the Sign In activity
+//            startActivity(new Intent(this, SignInActivity.class));
+//            finish();
+//            return;
+//        } else {
+//            mUsername = mFirebaseUser.getDisplayName();
+//            if (mFirebaseUser.getPhotoUrl() != null) {
+//                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+//            }
+//        }
 
         mUsername = "Konnect user";
 //        mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -171,16 +171,12 @@ public class MainActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DataSnapshot loginSnap = dataSnapshot.child("login");
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
-                ArrayList<Login> loginDetails = new ArrayList<>();
+                ArrayList<ChatUser> loginDetails = new ArrayList<>();
 
                 for(DataSnapshot snap : loginChildren){
-                    Login login = snap.getValue(Login.class);
-                    //Log.d("login child","login Username : " + login.getUserName());
-                    loginDetails.add(login);
-                }
-                for(Login l : loginDetails)
-                {
-                    Log.d("login test","Username :" + l.getUserName() + " Firstname :" + l.getFirstName());
+                    ChatUser chatUser = snap.getValue(ChatUser.class);
+
+                    loginDetails.add(chatUser);
                 }
             }
 
@@ -191,14 +187,14 @@ public class MainActivity extends AppCompatActivity
 
 
         //DatabaseReference loginRef = mFirebaseDatabaseReference.child("login");
-//        SnapshotParser<Login> loginParser = new SnapshotParser<Login>() {
+//        SnapshotParser<ChatUser> loginParser = new SnapshotParser<ChatUser>() {
 //            @Override
-//            public Login parseSnapshot(DataSnapshot snapshot) {
-//                Login loginDetails = snapshot.getValue(Login.class);
+//            public ChatUser parseSnapshot(DataSnapshot snapshot) {
+//                ChatUser loginDetails = snapshot.getValue(ChatUser.class);
 //                if(loginDetails !=null ){
 //                    loginDetails.setId(Integer.parseInt(snapshot.getKey()));
 //                }
-//                Log.d("Hi","Login Details " + loginDetails.getUserName());
+//                Log.d("Hi","ChatUser Details " + loginDetails.getUserName());
 //                return loginDetails;
 //            }
 //        };
@@ -206,11 +202,11 @@ public class MainActivity extends AppCompatActivity
 //        loginRef.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //Login login = dataSnapshot.getValue(Login.class);
+//                //ChatUser chatUser = dataSnapshot.getValue(ChatUser.class);
 //                for (DataSnapshot snap: dataSnapshot.getChildren()) {
-//                    Log.e(snap.getKey(),"Login Children : " + snap.getChildrenCount());
+//                    Log.e(snap.getKey(),"ChatUser Children : " + snap.getChildrenCount());
 //                }
-//                //Log.d("Login","Login snapshot "+login.getUserName());
+//                //Log.d("ChatUser","ChatUser snapshot "+chatUser.getUserName());
 //            }
 //
 //            @Override
@@ -400,7 +396,7 @@ public class MainActivity extends AppCompatActivity
                 mFirebaseAuth.signOut();
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 mUsername = ANONYMOUS;
-                startActivity(new Intent(this, SignInActivity.class));
+                startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 return true;
             default:
