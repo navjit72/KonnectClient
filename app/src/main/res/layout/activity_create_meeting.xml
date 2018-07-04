@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.navjit.konnect.Activity.CreateMeetingActivity">
+
+    <TextView
+        android:id="@+id/meeting_invite_title"
+        style="@style/TextAppearance.AppCompat.Headline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="Meeting with XYZ" />
+
+    <LinearLayout
+        android:id="@+id/meeting_date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/meeting_invite_title"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/meeting_invite_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:hint="Meeting Date"
+            android:inputType="date" />
+
+        <ImageButton
+            android:id="@+id/btn_meeting_invite_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:onClick="showDatePicker"
+            android:src="@drawable/ic_meeting_date" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/meeting_time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/meeting_date_layout"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/meeting_invite_time_from"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="From"
+            android:inputType="time" />
+
+        <ImageButton
+            android:id="@+id/btn_meeting_invite_time_from"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:onClick="showTimePicker"
+            android:src="@drawable/ic_meeting_invite" />
+
+        <EditText
+            android:id="@+id/meeting_invite_time_to"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="To"
+            android:inputType="time" />
+
+        <ImageButton
+            android:id="@+id/btn_meeting_invite_time_to"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:onClick="showTimePicker"
+            android:src="@drawable/ic_meeting_invite" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/meeting_invite_venue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/meeting_time_layout"
+        android:layout_marginTop="20dp"
+        android:hint="Venue" />
+
+    <Button
+        android:id="@+id/create_meeting_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/meeting_invite_venue"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:onClick="createMeeting"
+        android:text="Create Meeting" />
+
+</RelativeLayout>

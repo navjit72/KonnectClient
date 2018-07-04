@@ -1,7 +1,6 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.Activity;
 
 import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,7 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.firebase.ui.database.SnapshotParser;
+import com.example.navjit.konnect.Model.ChatUser;
+import com.example.navjit.konnect.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -82,9 +82,12 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         if(l.getPassword().equals(editTextPassword.getText().toString()))
                         {
-                            Intent detailsIntent =  new Intent(getApplicationContext(),MainActivity.class);
+                            //Intent detailsIntent =  new Intent(getApplicationContext(),MainActivity.class);
+                            Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
                             detailsIntent.putExtra("Username", editTextUsername.getText().toString());
-                            detailsIntent.putExtra("Password", editTextPassword.getText().toString());
+                            detailsIntent.putExtra("UserType", l.getUserType());
+                            detailsIntent.putExtra("FirstName", l.getFirstName());
+                            detailsIntent.putExtra("LastName", l.getLastName());
                             startActivity(detailsIntent);
                         }
                         else
