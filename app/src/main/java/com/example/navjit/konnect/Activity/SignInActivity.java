@@ -1,4 +1,4 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.Activity;
 //
 //import android.content.Intent;
 //import android.os.Bundle;
@@ -130,9 +130,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -171,7 +169,6 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void signIn() {
-        Log.d(TAG, "signIn");
 
         String email = "info@konnect.com";
         String password = "konnect";
@@ -194,7 +191,7 @@ public class SignInActivity extends AppCompatActivity {
     private void onAuthSuccess(FirebaseUser user) {
 
 // Go to MainActivity
-        startActivity(new Intent(SignInActivity.this, MainActivity.class));
+        startActivity(new Intent(SignInActivity.this, LoginActivity.class));
         finish();
     }
 }

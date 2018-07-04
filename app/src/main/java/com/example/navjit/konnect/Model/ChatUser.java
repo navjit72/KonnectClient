@@ -1,6 +1,6 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.Model;
 
-public class Login {
+public class ChatUser {
     //private int id;
     private String userName;
     private String firstName;
@@ -8,10 +8,10 @@ public class Login {
     private String userType;
     private String password;
 
-    public Login(){
+    public ChatUser(){
     }
 
-    public Login(String userName, String firstName, String lastName, String userType, String password) {
+    public ChatUser(String userName, String firstName, String lastName, String userType, String password) {
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -1,4 +1,4 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.Activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.navjit.konnect.Model.ChatUser;
+import com.example.navjit.konnect.Model.FriendlyMessage;
+import com.example.navjit.konnect.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -111,17 +113,17 @@ public class MainActivity extends AppCompatActivity
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mProgressBar = findViewById(R.id.progressBar);
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        } else {
-            mUsername = mFirebaseUser.getDisplayName();
-            if (mFirebaseUser.getPhotoUrl() != null) {
-                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-            }
-        }
+//        if (mFirebaseUser == null) {
+//            // Not signed in, launch the Sign In activity
+//            startActivity(new Intent(this, SignInActivity.class));
+//            finish();
+//            return;
+//        } else {
+//            mUsername = mFirebaseUser.getDisplayName();
+//            if (mFirebaseUser.getPhotoUrl() != null) {
+//                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
+//            }
+//        }
 
         mUsername = "Konnect user";
 //        mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -152,16 +154,12 @@ public class MainActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DataSnapshot loginSnap = dataSnapshot.child("login");
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
-                ArrayList<Login> loginDetails = new ArrayList<>();
+                ArrayList<ChatUser> loginDetails = new ArrayList<>();
 
                 for(DataSnapshot snap : loginChildren){
-                    Login login = snap.getValue(Login.class);
-                    //Log.d("login child","login Username : " + login.getUserName());
-                    loginDetails.add(login);
-                }
-                for(Login l : loginDetails)
-                {
-                    Log.d("login test","Username :" + l.getUserName() + " Firstname :" + l.getFirstName());
+                    ChatUser chatUser = snap.getValue(ChatUser.class);
+
+                    loginDetails.add(chatUser);
                 }
             }
 
@@ -172,14 +170,14 @@ public class MainActivity extends AppCompatActivity
 
 
         //DatabaseReference loginRef = mFirebaseDatabaseReference.child("login");
-//        SnapshotParser<Login> loginParser = new SnapshotParser<Login>() {
+//        SnapshotParser<ChatUser> loginParser = new SnapshotParser<ChatUser>() {
 //            @Override
-//            public Login parseSnapshot(DataSnapshot snapshot) {
-//                Login loginDetails = snapshot.getValue(Login.class);
+//            public ChatUser parseSnapshot(DataSnapshot snapshot) {
+//                ChatUser loginDetails = snapshot.getValue(ChatUser.class);
 //                if(loginDetails !=null ){
 //                    loginDetails.setId(Integer.parseInt(snapshot.getKey()));
 //                }
-//                Log.d("Hi","Login Details " + loginDetails.getUserName());
+//                Log.d("Hi","ChatUser Details " + loginDetails.getUserName());
 //                return loginDetails;
 //            }
 //        };
@@ -187,11 +185,11 @@ public class MainActivity extends AppCompatActivity
 //        loginRef.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //Login login = dataSnapshot.getValue(Login.class);
+//                //ChatUser chatUser = dataSnapshot.getValue(ChatUser.class);
 //                for (DataSnapshot snap: dataSnapshot.getChildren()) {
-//                    Log.e(snap.getKey(),"Login Children : " + snap.getChildrenCount());
+//                    Log.e(snap.getKey(),"ChatUser Children : " + snap.getChildrenCount());
 //                }
-//                //Log.d("Login","Login snapshot "+login.getUserName());
+//                //Log.d("ChatUser","ChatUser snapshot "+chatUser.getUserName());
 //            }
 //
 //            @Override
@@ -294,8 +292,8 @@ public class MainActivity extends AppCompatActivity
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-        mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mSharedPreferences
-                .getInt(CodelabPreferences.FRIENDLY_MSG_LENGTH, DEFAULT_MSG_LENGTH_LIMIT))});
+        //mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mSharedPreferences
+          //      .getInt(CodelabPreferences.FRIENDLY_MSG_LENGTH, DEFAULT_MSG_LENGTH_LIMIT))});
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -381,7 +379,7 @@ public class MainActivity extends AppCompatActivity
                 mFirebaseAuth.signOut();
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 mUsername = ANONYMOUS;
-                startActivity(new Intent(this, SignInActivity.class));
+                startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 return true;
             case R.id.meeting_invite:

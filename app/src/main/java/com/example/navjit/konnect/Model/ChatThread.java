@@ -1,15 +1,26 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.Model;
 
 public class ChatThread {
+
+    private String threadId;
     private String messengerOne;
     private String messengerTwo;
 
     public ChatThread(){
     }
 
-    public ChatThread(String messengerOne, String messengerTwo) {
+    public ChatThread(String threadId,String messengerOne, String messengerTwo) {
+        this.threadId=threadId;
         this.messengerOne = messengerOne;
         this.messengerTwo = messengerTwo;
+    }
+
+    public String getThreadId() {
+        return threadId;
+    }
+
+    public void setThreadId(String threadId) {
+        this.threadId = threadId;
     }
 
     public String getMessengerOne() {
