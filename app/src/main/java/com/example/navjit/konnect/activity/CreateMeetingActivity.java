@@ -1,4 +1,4 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.activity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -11,7 +11,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.example.navjit.konnect.util.CalendarEventsUtil;
+import com.example.navjit.konnect.R;
+import com.example.navjit.konnect.service.CalendarEventsService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -104,7 +105,6 @@ public class CreateMeetingActivity extends AppCompatActivity {
         TimePickerDialog dialog;
 
         switch (view.getId()) {
-
             case R.id.btn_meeting_invite_time_from:
                 dialog = new TimePickerDialog(this,
                         R.style.Theme_AppCompat_Light_Dialog_Alert,
@@ -124,6 +124,6 @@ public class CreateMeetingActivity extends AppCompatActivity {
     }
 
     public void createMeeting(View view) {
-        CalendarEventsUtil.addEventToCalendar(this);
+        CalendarEventsService.addEventToCalendar(this);
     }
 }

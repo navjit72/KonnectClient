@@ -1,8 +1,7 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.service;
 
 import android.util.Log;
 
-import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseMessagingService {
