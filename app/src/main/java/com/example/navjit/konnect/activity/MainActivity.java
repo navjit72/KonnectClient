@@ -1,4 +1,4 @@
-package com.example.navjit.konnect.Activity;
+package com.example.navjit.konnect.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,8 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.navjit.konnect.Model.ChatUser;
-import com.example.navjit.konnect.Model.FriendlyMessage;
+import com.example.navjit.konnect.model.ChatUser;
+import com.example.navjit.konnect.model.FriendlyMessage;
 import com.example.navjit.konnect.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;

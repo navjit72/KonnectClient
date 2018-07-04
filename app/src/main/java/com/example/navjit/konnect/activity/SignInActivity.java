@@ -1,4 +1,4 @@
-package com.example.navjit.konnect.Activity;
+package com.example.navjit.konnect.activity;
 //
 //import android.content.Intent;
 //import android.os.Bundle;
