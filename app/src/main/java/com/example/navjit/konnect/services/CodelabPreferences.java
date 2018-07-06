@@ -1,4 +1,4 @@
-package com.example.navjit.konnect;
+package com.example.navjit.konnect.services;
 
 public class CodelabPreferences {
 

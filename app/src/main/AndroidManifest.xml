@@ -17,18 +17,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.LoginActivity">
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.SignInActivity" />
-        <activity android:name=".Activity.MainActivity" />
-        <activity android:name=".Activity.CreateMeetingActivity" />
+        <activity android:name=".activity.SignInActivity" />
+        <activity android:name=".activity.MainActivity" />
+        <activity android:name=".activity.CreateMeetingActivity" />
         <activity
-            android:name=".Activity.ChatListActivity"
+            android:name=".activity.ChatListActivity"
             android:label="@string/title_activity_chat_list"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

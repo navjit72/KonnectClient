@@ -1,4 +1,4 @@
-package com.example.navjit.konnect.Model;
+package com.example.navjit.konnect.model;
 
 public class FriendlyMessage {
 

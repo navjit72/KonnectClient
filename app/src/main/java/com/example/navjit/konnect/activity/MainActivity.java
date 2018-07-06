@@ -1,4 +1,4 @@
-package com.example.navjit.konnect.Activity;
+package com.example.navjit.konnect.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,8 +27,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.navjit.konnect.Model.ChatUser;
-import com.example.navjit.konnect.Model.FriendlyMessage;
+import com.example.navjit.konnect.model.ChatUser;
+import com.example.navjit.konnect.model.FriendlyMessage;
 import com.example.navjit.konnect.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
-    private static final String THREAD_ID = "T101";
+    private static String THREAD_ID;
 
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private static final String TAG = "MainActivity";
-    public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_IMAGE = 2;
     private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
@@ -106,6 +105,10 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            THREAD_ID= bundle.getString("Thread");
+        }
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
         mUsername = ANONYMOUS;
@@ -198,7 +201,7 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        DatabaseReference messagesRef = mFirebaseDatabaseReference.child(MESSAGES_CHILD);
+        DatabaseReference messagesRef = mFirebaseDatabaseReference.child(THREAD_ID);
         FirebaseRecyclerOptions<FriendlyMessage> options =
                 new FirebaseRecyclerOptions.Builder<FriendlyMessage>()
                         .setQuery(messagesRef, parser)
@@ -322,7 +325,7 @@ public class MainActivity extends AppCompatActivity
                         mUsername,
                         mPhotoUrl,
                         null /* no image */, THREAD_ID);
-                mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+                mFirebaseDatabaseReference.child(THREAD_ID)
                         .push().setValue(friendlyMessage);
                 mMessageEditText.setText("");
             }

@@ -1,4 +1,4 @@
-package com.example.navjit.konnect.Activity;
+package com.example.navjit.konnect.activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.navjit.konnect.Model.ChatUser;
+import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 for(DataSnapshot snap : loginChildren){
                     ChatUser login = snap.getValue(ChatUser.class);
-                    Log.d("ChatUser" , "ChatUser username : " + login.getUserName());
+                    //Log.d("ChatUser" , "ChatUser username : " + login.getUserName());
                     usernameDetails.add(login.getUserName());
                     loginDetails.add(login);
                 }

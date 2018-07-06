@@ -1,4 +1,4 @@
-package com.example.navjit.konnect.Activity;
+package com.example.navjit.konnect.activity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
