@@ -20,7 +20,13 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_chat_list" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewChatList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/toolbar"
+        app:layout_anchorGravity="bottom"
+        android:layout_gravity="bottom"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 for(DataSnapshot snap : loginChildren){
                     ChatUser login = snap.getValue(ChatUser.class);
-                    Log.d("ChatUser" , "ChatUser username : " + login.getUserName());
+                    //Log.d("ChatUser" , "ChatUser username : " + login.getUserName());
                     usernameDetails.add(login.getUserName());
                     loginDetails.add(login);
                 }

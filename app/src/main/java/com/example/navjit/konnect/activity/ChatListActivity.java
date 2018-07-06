@@ -1,14 +1,21 @@
 package com.example.navjit.konnect.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 
+import com.example.navjit.konnect.model.ChatAdapter;
+import com.example.navjit.konnect.model.ChatEngine;
+import com.example.navjit.konnect.model.ChatItemClickListener;
 import com.example.navjit.konnect.model.ChatThread;
 import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.R;
@@ -28,6 +35,10 @@ public class ChatListActivity extends AppCompatActivity {
     ArrayList<ChatUser> secondUsers = new ArrayList<>();
 
     ChatUser userOne = new ChatUser();
+
+    RecyclerView recyclerView;
+    RecyclerView.Adapter adapter;
+    ChatEngine engine;
 
 
     @Override
@@ -63,7 +74,7 @@ public class ChatListActivity extends AppCompatActivity {
 
                 for (DataSnapshot snap : threadDetails) {
                     ChatThread chatThread = snap.getValue(ChatThread.class);
-                    Log.d("ChatThread", "ChatThread threadId : " + chatThread.getThreadId() + "Chat User : " + chatThread.getMessengerOne());
+                    //Log.d("ChatThread", "ChatThread threadId : " + chatThread.getThreadId() + "Chat User : " + chatThread.getMessengerOne());
                     if(userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
                         chatThreadDetails.add(chatThread);
                     }
@@ -83,10 +94,9 @@ public class ChatListActivity extends AppCompatActivity {
                             secondUsers.add(u);
                     }
                 }
-                for(ChatUser u : secondUsers)
-                {
-                    Log.d("Second User", "Second user : " + u.getFirstName() + " " + u.getLastName());
-                }
+//                for (ChatThread t: chatThreadDetails) {
+//                    Log.d("Chat thread details","Thread  :" + t.getThreadId() + t.getMessengerOne() + t.getMessengerTwo());
+//                }
             }
 
             @Override
@@ -103,6 +113,20 @@ public class ChatListActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        engine=new ChatEngine(userOne,secondUsers,chatThreadDetails);
+        recyclerView = findViewById(R.id.recyclerViewChatList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        adapter = new ChatAdapter(engine, new ChatItemClickListener() {
+            @Override
+            public void onChatClickListener(ChatUser user, ChatThread chatThread) {
+                Intent contactIntent =  new Intent(getApplicationContext(),MainActivity.class);
+                contactIntent.putExtra("Name", user.getFirstName() + " " + user.getLastName());
+                contactIntent.putExtra("Thread", chatThread.getThreadId());
+                startActivity(contactIntent);
+            }
+        });
+        recyclerView.setAdapter(adapter);
     }
 
 }
