@@ -33,34 +33,35 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        List<ChatUser> otherUsers = chatEngine.getSecondUsers();
-        ChatUser otherUser = new ChatUser();
-        ChatUser user = chatEngine.getUser();
-       // Log.d("Chat engine user","user : " + user.getFirstName());
-        ChatThread chatThread =chatEngine.getChatThread(position);
-        //FriendlyMessage message = chatEngine.getFriendlyMessage(position);
-        //Log.d("Adapter message","Adapter message" + message.getThreadId() + " : " + message.getText());
-        if(user.getUserName().equals(chatThread.getMessengerOne())) {
-            for (ChatUser u : otherUsers) {
-                if (u.getUserName().equals(chatThread.getMessengerTwo()))
-                    otherUser=u;
-            }
-        }
-        else {
-            for (ChatUser u :otherUsers) {
-                if(u.getUserName().equals(chatThread.getMessengerOne()))
-                    otherUser=u;
-            }
-        }
-        holder.name.setText(otherUser.getFirstName() + " " + otherUser.getLastName());
-        holder.lastMsg.setText(chatThread.getThreadId());
-        holder.bind(user,chatThread,listener);
+//        List<ChatUser> otherUsers = chatEngine.getSecondUsers();
+//        ChatUser otherUser = new ChatUser();
+//        ChatUser user = chatEngine.getUser();
+//       // Log.d("Chat engine user","user : " + user.getFirstName());
+//        ChatThread chatThread =chatEngine.getChatThread(position);
+//        //FriendlyMessage message = chatEngine.getFriendlyMessage(position);
+//        //Log.d("Adapter message","Adapter message" + message.getThreadId() + " : " + message.getText());
+//        if(user.getUserName().equals(chatThread.getMessengerOne())) {
+//            for (ChatUser u : otherUsers) {
+//                if (u.getUserName().equals(chatThread.getMessengerTwo()))
+//                    otherUser=u;
+//            }
+//        }
+//        else {
+//            for (ChatUser u :otherUsers) {
+//                if(u.getUserName().equals(chatThread.getMessengerOne()))
+//                    otherUser=u;
+//            }
+//        }
+        ChatContact contact =chatEngine.getChatContact(position);
+        holder.name.setText(contact.getFirstName() + " " + contact.getLastName());
+        holder.lastMsg.setText(contact.getLastMessage());
+        holder.bind(contact,listener);
 
     }
 
     @Override
     public int getItemCount() {
-        return chatEngine.getChatThreads().size();
+        return chatEngine.getChatContacts().size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -75,10 +76,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             lastMsg = view.findViewById(R.id.textViewLastMsg);
         }
 
-        public void bind(final ChatUser user,final ChatThread thread, final ChatItemClickListener listener) {
+        public void bind(final ChatContact chatContact, final ChatItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onChatClickListener(user,thread);
+                    listener.onChatClickListener(chatContact);
                 }
             });
         }

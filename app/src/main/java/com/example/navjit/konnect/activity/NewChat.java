@@ -5,9 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.EditText;
 
 import com.example.navjit.konnect.R;
+import com.example.navjit.konnect.model.ChatContact;
 import com.example.navjit.konnect.model.ChatItemClickListener;
 import com.example.navjit.konnect.model.ChatThread;
 import com.example.navjit.konnect.model.ChatUser;
@@ -21,6 +23,7 @@ public class NewChat extends AppCompatActivity {
     ArrayList<ChatUser> users=new ArrayList<>();
     ArrayList<ChatUser> otherUsers = new ArrayList<>();
     ArrayList<ChatUser> userToDisplay = new ArrayList<>();
+    ArrayList<ChatUser> usersNotToDisplay = new ArrayList<>();
     ChatUser currentUser;
     NewChatEngine engine;
     RecyclerView recyclerView;
@@ -39,19 +42,33 @@ public class NewChat extends AppCompatActivity {
             otherUsers = (ArrayList<ChatUser>) getIntent().getSerializableExtra("OtherUsers");
             currentUser = (ChatUser) getIntent().getSerializableExtra("Current User");
         }
-        for(ChatUser u : users){
-            for(ChatUser user : otherUsers){
-                if(!user.getUserName().equals(u.getUserName())){
-                    userToDisplay.add(u);
-                }
-            }
+        usersNotToDisplay.addAll(otherUsers);
+        usersNotToDisplay.add(currentUser);
+
+        //removeAll(usersNotToDisplay);
+        for(ChatUser user : usersNotToDisplay)
+        {
+            users.remove(user);
         }
 
-        engine = new NewChatEngine(currentUser,userToDisplay);
+        for(ChatUser u : users){
+            Log.d("Users","Users " + u.getFirstName() + " "+ u.getLastName());
+        }
+//        for(ChatUser u : otherUsers){
+//            Log.d("Others Users","Others Users " + u.getFirstName() + " "+ u.getLastName());
+//        }
+//        for(ChatUser u : userToDisplay){
+//            Log.d("Users to Display","Users to Display " + u.getFirstName() + " "+ u.getLastName());
+//        }
+
+        engine = new NewChatEngine(currentUser,users);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         adapter = new NewChatAdapter(engine, new ChatItemClickListener() {
+
+
             @Override
-            public void onChatClickListener(ChatUser user, ChatThread chatThread) {
+            public void onChatClickListener(ChatContact contact) {
+
             }
 
             @Override
@@ -63,6 +80,7 @@ public class NewChat extends AppCompatActivity {
 //                startActivity(contactIntent);
             }
         });
+        recyclerView.setAdapter(adapter);
 
     }
 }
