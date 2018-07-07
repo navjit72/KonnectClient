@@ -23,18 +23,14 @@ public class NewChatAdapter extends RecyclerView.Adapter<NewChatAdapter.MyViewHo
 
     @Override
     public NewChatAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_chat_users_item,parent,false);
         MyViewHolder viewHolder = new MyViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        List<ChatUser> users = newChatEngine.getNewChatUsers();
-        ChatUser user=new ChatUser();
-        for (ChatUser u: users) {
-            user=u;
-        }
+        ChatUser user = newChatEngine.getNewChatUser(position);
         holder.name.setText(user.getFirstName() + " " + user.getLastName());
         holder.username.setText(user.getUserName());
         holder.bind(user,listener);
@@ -42,7 +38,7 @@ public class NewChatAdapter extends RecyclerView.Adapter<NewChatAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        return 0;
+        return newChatEngine.getNewChatUsers().size();
     }
 
 

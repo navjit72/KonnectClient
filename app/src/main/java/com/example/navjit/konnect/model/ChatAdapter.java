@@ -33,25 +33,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-//        List<ChatUser> otherUsers = chatEngine.getSecondUsers();
-//        ChatUser otherUser = new ChatUser();
-//        ChatUser user = chatEngine.getUser();
-//       // Log.d("Chat engine user","user : " + user.getFirstName());
-//        ChatThread chatThread =chatEngine.getChatThread(position);
-//        //FriendlyMessage message = chatEngine.getFriendlyMessage(position);
-//        //Log.d("Adapter message","Adapter message" + message.getThreadId() + " : " + message.getText());
-//        if(user.getUserName().equals(chatThread.getMessengerOne())) {
-//            for (ChatUser u : otherUsers) {
-//                if (u.getUserName().equals(chatThread.getMessengerTwo()))
-//                    otherUser=u;
-//            }
-//        }
-//        else {
-//            for (ChatUser u :otherUsers) {
-//                if(u.getUserName().equals(chatThread.getMessengerOne()))
-//                    otherUser=u;
-//            }
-//        }
         ChatContact contact =chatEngine.getChatContact(position);
         holder.name.setText(contact.getFirstName() + " " + contact.getLastName());
         holder.lastMsg.setText(contact.getLastMessage());

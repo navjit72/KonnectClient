@@ -17,13 +17,14 @@ import com.example.navjit.konnect.model.NewChatAdapter;
 import com.example.navjit.konnect.model.NewChatEngine;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NewChat extends AppCompatActivity {
 
-    ArrayList<ChatUser> users=new ArrayList<>();
-    ArrayList<ChatUser> otherUsers = new ArrayList<>();
-    ArrayList<ChatUser> userToDisplay = new ArrayList<>();
-    ArrayList<ChatUser> usersNotToDisplay = new ArrayList<>();
+    List<ChatUser> users=new ArrayList<>();
+    List<ChatUser> otherUsers = new ArrayList<>();
+    List<ChatUser> userToDisplay = new ArrayList<>();
+    List<ChatUser> usersNotToDisplay = new ArrayList<>();
     ChatUser currentUser;
     NewChatEngine engine;
     RecyclerView recyclerView;
@@ -45,21 +46,11 @@ public class NewChat extends AppCompatActivity {
         usersNotToDisplay.addAll(otherUsers);
         usersNotToDisplay.add(currentUser);
 
-        //removeAll(usersNotToDisplay);
-        for(ChatUser user : usersNotToDisplay)
-        {
-            users.remove(user);
-        }
+        users.removeAll(usersNotToDisplay);
 
         for(ChatUser u : users){
             Log.d("Users","Users " + u.getFirstName() + " "+ u.getLastName());
         }
-//        for(ChatUser u : otherUsers){
-//            Log.d("Others Users","Others Users " + u.getFirstName() + " "+ u.getLastName());
-//        }
-//        for(ChatUser u : userToDisplay){
-//            Log.d("Users to Display","Users to Display " + u.getFirstName() + " "+ u.getLastName());
-//        }
 
         engine = new NewChatEngine(currentUser,users);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));

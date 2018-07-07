@@ -17,6 +17,10 @@ public class NewChatEngine{
         return userOne;
     }
 
+    public ChatUser getNewChatUser(int position){
+        return newChatUsers.get(position);
+    }
+
     public void setUserOne(ChatUser userOne) {
         this.userOne = userOne;
     }
