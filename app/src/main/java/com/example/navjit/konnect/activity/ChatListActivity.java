@@ -151,6 +151,7 @@ public class ChatListActivity extends AppCompatActivity {
 //                contactIntent.putExtra("Username",user.getUserName());
 //                contactIntent.putExtra("Name", user.getFirstName() + " " + user.getLastName());
                 contactIntent.putExtra("Current User",userOne);
+                contactIntent.putExtra("Other User",contact);
                 contactIntent.putExtra("Thread", contact.getThreadId());
                 startActivity(contactIntent);
             }

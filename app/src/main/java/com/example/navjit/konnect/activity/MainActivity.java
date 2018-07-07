@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.navjit.konnect.model.ChatContact;
 import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.model.FriendlyMessage;
 import com.example.navjit.konnect.R;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
+    private ChatContact contact;
 
     // Firebase instance variables
 
@@ -111,7 +113,9 @@ public class MainActivity extends AppCompatActivity
             THREAD_ID= bundle.getString("Thread");
             currentUser = (ChatUser) getIntent().getSerializableExtra("Current User");
             mUsername = currentUser.getFirstName() + " " + currentUser.getLastName();
+            contact = (ChatContact) getIntent().getSerializableExtra("Other User");
         }
+        this.setTitle(contact.getFirstName() + " " + contact.getLastName());
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
         // Initialize Firebase Auth
