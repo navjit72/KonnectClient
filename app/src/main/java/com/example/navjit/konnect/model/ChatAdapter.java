@@ -38,6 +38,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         ChatUser user = chatEngine.getUser();
        // Log.d("Chat engine user","user : " + user.getFirstName());
         ChatThread chatThread =chatEngine.getChatThread(position);
+        //FriendlyMessage message = chatEngine.getFriendlyMessage(position);
+        //Log.d("Adapter message","Adapter message" + message.getThreadId() + " : " + message.getText());
         if(user.getUserName().equals(chatThread.getMessengerOne())) {
             for (ChatUser u : otherUsers) {
                 if (u.getUserName().equals(chatThread.getMessengerTwo()))
@@ -52,7 +54,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         }
         holder.name.setText(otherUser.getFirstName() + " " + otherUser.getLastName());
         holder.lastMsg.setText(chatThread.getThreadId());
-        holder.bind(otherUser,chatThread,listener);
+        holder.bind(user,chatThread,listener);
 
     }
 
@@ -73,10 +75,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             lastMsg = view.findViewById(R.id.textViewLastMsg);
         }
 
-        public void bind(final ChatUser otherUser,final ChatThread chatThread, final ChatItemClickListener listener) {
+        public void bind(final ChatUser user,final ChatThread thread, final ChatItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onChatClickListener(otherUser,chatThread);
+                    listener.onChatClickListener(user,thread);
                 }
             });
         }

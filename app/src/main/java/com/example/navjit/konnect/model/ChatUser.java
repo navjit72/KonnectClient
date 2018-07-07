@@ -1,6 +1,8 @@
 package com.example.navjit.konnect.model;
 
-public class ChatUser {
+import java.io.Serializable;
+
+public class ChatUser implements Serializable{
     //private int id;
     private String userName;
     private String firstName;

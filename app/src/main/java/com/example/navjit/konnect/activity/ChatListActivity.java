@@ -19,6 +19,7 @@ import com.example.navjit.konnect.model.ChatItemClickListener;
 import com.example.navjit.konnect.model.ChatThread;
 import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.R;
+import com.example.navjit.konnect.model.FriendlyMessage;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +34,7 @@ public class ChatListActivity extends AppCompatActivity {
     ArrayList<ChatThread> chatThreadDetails = new ArrayList<>();
     ArrayList<ChatUser> users = new ArrayList<>();
     ArrayList<ChatUser> secondUsers = new ArrayList<>();
+    ArrayList<FriendlyMessage> messageList = new ArrayList<>();
 
     ChatUser userOne = new ChatUser();
 
@@ -52,10 +54,11 @@ public class ChatListActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if(bundle !=null) {
-            userOne.setUserName(bundle.getString("Username"));
-            userOne.setFirstName(bundle.getString("FirstName"));
-            userOne.setLastName(bundle.getString("LastName"));
-            userOne.setUserType(bundle.getString("UserType"));
+            userOne = (ChatUser)getIntent().getSerializableExtra("Current User");
+//            userOne.setUserName(bundle.getString("Username"));
+//            userOne.setFirstName(bundle.getString("FirstName"));
+//            userOne.setLastName(bundle.getString("LastName"));
+//            userOne.setUserType(bundle.getString("UserType"));
         }
 
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -97,6 +100,16 @@ public class ChatListActivity extends AppCompatActivity {
 //                for (ChatThread t: chatThreadDetails) {
 //                    Log.d("Chat thread details","Thread  :" + t.getThreadId() + t.getMessengerOne() + t.getMessengerTwo());
 //                }
+                for(ChatThread chatThread : chatThreadDetails) {
+                    DataSnapshot messagesSnap = dataSnapshot.child(chatThread.getThreadId());
+                    Iterable<DataSnapshot> lastmsgDetails = messagesSnap.getChildren();
+                    for(DataSnapshot snap : lastmsgDetails){
+                        FriendlyMessage friendlyMessage = snap.getValue(FriendlyMessage.class);
+                        Log.d("Friendly Message","Friendly Message" + friendlyMessage.getThreadId() + " : " + friendlyMessage.getText());
+                        messageList.add(friendlyMessage);
+                    }
+                }
+
             }
 
             @Override
@@ -109,8 +122,11 @@ public class ChatListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent newChatIntent = new Intent(getApplicationContext(),NewChat.class);
+                newChatIntent.putExtra("AllUsers", users);
+                newChatIntent.putExtra("OtherUsers",secondUsers);
+                newChatIntent.putExtra("Current User",userOne);
+                startActivity(newChatIntent);
             }
         });
 
@@ -121,9 +137,15 @@ public class ChatListActivity extends AppCompatActivity {
             @Override
             public void onChatClickListener(ChatUser user, ChatThread chatThread) {
                 Intent contactIntent =  new Intent(getApplicationContext(),MainActivity.class);
-                contactIntent.putExtra("Name", user.getFirstName() + " " + user.getLastName());
+//                contactIntent.putExtra("Username",user.getUserName());
+//                contactIntent.putExtra("Name", user.getFirstName() + " " + user.getLastName());
+                contactIntent.putExtra("Current User",userOne);
                 contactIntent.putExtra("Thread", chatThread.getThreadId());
                 startActivity(contactIntent);
+            }
+
+            @Override
+            public void onNewChatClickListener(ChatUser user) {
             }
         });
         recyclerView.setAdapter(adapter);

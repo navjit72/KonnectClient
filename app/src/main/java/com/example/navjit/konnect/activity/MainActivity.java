@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
     private static String THREAD_ID;
+    private ChatUser currentUser;
 
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -108,10 +109,11 @@ public class MainActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             THREAD_ID= bundle.getString("Thread");
+            currentUser = (ChatUser) getIntent().getSerializableExtra("Current User");
+            mUsername = currentUser.getFirstName() + " " + currentUser.getLastName();
         }
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
-        mUsername = ANONYMOUS;
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
@@ -127,8 +129,6 @@ public class MainActivity extends AppCompatActivity
 //                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
 //            }
 //        }
-
-        mUsername = "Konnect user";
 //        mGoogleApiClient = new GoogleApiClient.Builder(this)
 //                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
 //                .addApi(Auth.GOOGLE_SIGN_IN_API)
