@@ -88,14 +88,19 @@ public class NewChat extends AppCompatActivity {
                         threadCounter = dataSnapshot.getValue(Long.class);
                         threadCounter+=1;
                         mFirebaseDatabaseReference.child("threadCounter").setValue(threadCounter);
+                        ChatThread chatThread = new ChatThread("messages"+(100+threadCounter),currentUser.getUserName(),user.getUserName());
+                        mFirebaseDatabaseReference.child("thread").child(""+threadCounter).setValue(chatThread);
 
-//                        Intent contactIntent = new Intent(getApplicationContext(), MainActivity.class);
-//                        contactIntent.putExtra("Current User", currentUser);
-//                        contactIntent.putExtra("Other User", user);
-//                        contactIntent.putExtra("New Chat",true);
-//                        String threadId = "messages"+threadCounter;
-//                        contactIntent.putExtra("Thread", threadId);
-//                        startActivity(contactIntent);
+                        Intent contactIntent = new Intent(getApplicationContext(), MainActivity.class);
+                        contactIntent.putExtra("Current User", currentUser);
+                        contactIntent.putExtra("Other UserName",user.getUserName());
+                        //contactIntent.putExtra("Other User", user);
+                        contactIntent.putExtra("Other User FirstName",user.getFirstName());
+                        contactIntent.putExtra("Other User LastName",user.getLastName());
+                        contactIntent.putExtra("New Chat",true);
+                        String threadId = "messages"+(100+threadCounter);
+                        contactIntent.putExtra("Thread", threadId);
+                        startActivity(contactIntent);
                     }
 
                     @Override

@@ -118,6 +118,7 @@ public class ChatListActivity extends AppCompatActivity {
                     contact.setLastName(secondUsers.get(i).getLastName());
                     contact.setThreadId(friendlyMessageList.get(i).getThreadId());
                     contact.setLastMessage(friendlyMessageList.get(i).getText());
+                    contact.setUserName(secondUsers.get(i).getUserName());
                     contactList.add(contact);
                 }
 
@@ -151,7 +152,9 @@ public class ChatListActivity extends AppCompatActivity {
 //                contactIntent.putExtra("Username",user.getUserName());
 //                contactIntent.putExtra("Name", user.getFirstName() + " " + user.getLastName());
                 contactIntent.putExtra("Current User",userOne);
-                contactIntent.putExtra("Other User",contact);
+                contactIntent.putExtra("Other UserName",contact.getUserName());
+                contactIntent.putExtra("Other User FirstName",contact.getFirstName());
+                contactIntent.putExtra("Other User LastName",contact.getLastName());
                 contactIntent.putExtra("Thread", contact.getThreadId());
                 startActivity(contactIntent);
             }

@@ -3,6 +3,7 @@ package com.example.navjit.konnect.model;
 import java.io.Serializable;
 
 public class ChatContact implements Serializable{
+    private String userName;
     private String firstName;
     private String lastName;
     private String threadId;
@@ -10,11 +11,20 @@ public class ChatContact implements Serializable{
 
     public ChatContact(){}
 
-    public ChatContact(String firstName, String lastName, String threadId, String lastMessage) {
+    public ChatContact(String username,String firstName, String lastName, String threadId, String lastMessage) {
+        this.userName = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.threadId = threadId;
         this.lastMessage = lastMessage;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getFirstName() {

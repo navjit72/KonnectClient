@@ -100,7 +100,9 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
-    private ChatContact contact;
+    String otherUserName;
+    String otherUserFirstName;
+    String otherUserLastName;
 
     // Firebase instance variables
 
@@ -113,9 +115,11 @@ public class MainActivity extends AppCompatActivity
             THREAD_ID= bundle.getString("Thread");
             currentUser = (ChatUser) getIntent().getSerializableExtra("Current User");
             mUsername = currentUser.getFirstName() + " " + currentUser.getLastName();
-            contact = (ChatContact) getIntent().getSerializableExtra("Other User");
+            otherUserName = bundle.getString("Other UserName");
+            otherUserFirstName = bundle.getString("Other User FirstName");
+            otherUserLastName = bundle.getString("Other User LastName");
         }
-        this.setTitle(contact.getFirstName() + " " + contact.getLastName());
+        this.setTitle(otherUserFirstName + " " + otherUserLastName);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
         // Initialize Firebase Auth
@@ -145,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         // message:
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(THREAD_ID);
         SnapshotParser<FriendlyMessage> parser = new SnapshotParser<FriendlyMessage>() {
             @Override
             public FriendlyMessage parseSnapshot(DataSnapshot dataSnapshot) {
