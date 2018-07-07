@@ -7,6 +7,7 @@ public class ChatUser {
     private String lastName;
     private String userType;
     private String password;
+    private String email;
 
     public ChatUser(){
     }
@@ -61,6 +62,14 @@ public class ChatUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }
 
