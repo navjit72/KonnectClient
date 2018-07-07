@@ -14,4 +14,6 @@ public class Keys {
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
     public static final String ANONYMOUS = "anonymous";
     public static final String MESSAGE_SENT_EVENT = "message_sent";
+    public static final String SERVER_USER = "info@konnect.com";
+    public static final String SERVER_PASSWORD = "password";
 }

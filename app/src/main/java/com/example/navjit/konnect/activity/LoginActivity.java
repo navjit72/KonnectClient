@@ -1,9 +1,9 @@
 package com.example.navjit.konnect.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.R;
+import com.example.navjit.konnect.model.ChatUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -26,6 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+
+import static com.example.navjit.konnect.util.Keys.SERVER_PASSWORD;
+import static com.example.navjit.konnect.util.Keys.SERVER_USER;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -49,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        connectToServer();
 
         fetchUserData();
         addUserDataToAutoCompleteView();
@@ -56,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                trySignIn();
+                authoriseUser();
             }
         });
     }
@@ -96,18 +100,27 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword.setText("");
     }
 
-    private void trySignIn() {
+    private void authoriseUser() {
         String username = editTextUsername.getText().toString();
         String password = editTextPassword.getText().toString();
 
         if (username.equals("") || password.equals("")) {
-            Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show();
+            createToast("Please enter username and password");
         } else {
-            if (usernameDetails.contains(username)) {
-                signIn(getUser(username), password);
+            trySignIn(username, password);
+        }
+    }
+
+    private void trySignIn(String username, String password) {
+        if (usernameDetails.contains(username)) {
+            ChatUser loggedInUser = getUser(username);
+            if (loggedInUser.getPassword().equals(password)) {
+                goToChatList(loggedInUser);
             } else {
-                createToast("Sign In Failed");
+                createToast("Your Username/Password is incorrect");
             }
+        } else {
+            createToast("Sign In Failed");
         }
     }
 
@@ -121,17 +134,16 @@ public class LoginActivity extends AppCompatActivity {
         return null;
     }
 
-    private void signIn(ChatUser user, String password) {
-        mAuth.signInWithEmailAndPassword(user.getEmail(), password)
+    private void connectToServer() {
+        mAuth.signInWithEmailAndPassword(SERVER_USER, SERVER_PASSWORD)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("Login", "trySignIn:onComplete:" + task.isSuccessful());
+                        Log.d("Login", "authoriseUser:onComplete:" + task.isSuccessful());
                         if (task.isSuccessful()) {
-                            createToast("Logged in successfully");
-                            goToChatList(user);
+                            createToast("Connected to server");
                         } else {
-                            createToast("Sign In Failed");
+                            createToast("Could not connect to server");
                             editTextUsername.setText("");
                             editTextPassword.setText("");
                         }
