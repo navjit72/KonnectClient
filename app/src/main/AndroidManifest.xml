@@ -30,7 +30,8 @@
         <activity
             android:name=".activity.ChatListActivity"
             android:label="@string/title_activity_chat_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.NewChat"></activity>
     </application>
 
 </manifest>

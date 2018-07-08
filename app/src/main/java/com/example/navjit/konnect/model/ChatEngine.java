@@ -8,31 +8,27 @@ import java.util.List;
 
 public class ChatEngine {
     private ChatUser user;
-    private List<ChatUser> secondUsers;
-    private List<ChatThread> chatThreads;
+    private List<ChatContact> chatContacts;
 
-    public ChatEngine(ChatUser user,List<ChatUser> secondUsersList,List<ChatThread> threadList){
+    public ChatEngine(ChatUser user,List<ChatContact> contactList){
         this.user = user;
-        secondUsers=secondUsersList;
-        chatThreads=threadList;
+        chatContacts = contactList;
     }
     public ChatEngine(){
     }
 
-    public List<ChatThread> getChatThreads() {
-        return chatThreads;
+
+    public List<ChatContact> getChatContacts() {
+        return chatContacts;
     }
 
 
-    public ChatThread getChatThread(int index){
-        return chatThreads.get(index);
+    public ChatContact getChatContact(int index){
+        return chatContacts.get(index);
     }
 
     public ChatUser getUser() {
         return user;
     }
 
-    public List<ChatUser> getSecondUsers() {
-        return secondUsers;
-    }
 }
