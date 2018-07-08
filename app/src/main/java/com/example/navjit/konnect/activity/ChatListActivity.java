@@ -56,10 +56,6 @@ public class ChatListActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if(bundle !=null) {
             userOne = (ChatUser)getIntent().getSerializableExtra("Current User");
-//            userOne.setUserName(bundle.getString("Username"));
-//            userOne.setFirstName(bundle.getString("FirstName"));
-//            userOne.setLastName(bundle.getString("LastName"));
-//            userOne.setUserType(bundle.getString("UserType"));
         }
 
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -78,7 +74,6 @@ public class ChatListActivity extends AppCompatActivity {
 
                 for (DataSnapshot snap : threadDetails) {
                     ChatThread chatThread = snap.getValue(ChatThread.class);
-                    //Log.d("ChatThread", "ChatThread threadId : " + chatThread.getThreadId() + "Chat User : " + chatThread.getMessengerOne());
                     if(userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
                         chatThreadDetails.add(chatThread);
                     }
@@ -98,9 +93,6 @@ public class ChatListActivity extends AppCompatActivity {
                             secondUsers.add(u);
                     }
                 }
-//                for (ChatThread t: chatThreadDetails) {
-//                    Log.d("Chat thread details","Thread  :" + t.getThreadId() + t.getMessengerOne() + t.getMessengerTwo());
-//                }
                 FriendlyMessage friendlyMessage=null;
                 for(ChatThread chatThread : chatThreadDetails) {
                     DataSnapshot messagesSnap = dataSnapshot.child(chatThread.getThreadId());
@@ -149,8 +141,6 @@ public class ChatListActivity extends AppCompatActivity {
             @Override
             public void onChatClickListener(ChatContact contact) {
                 Intent contactIntent =  new Intent(getApplicationContext(),MainActivity.class);
-//                contactIntent.putExtra("Username",user.getUserName());
-//                contactIntent.putExtra("Name", user.getFirstName() + " " + user.getLastName());
                 contactIntent.putExtra("Current User",userOne);
                 contactIntent.putExtra("Other UserName",contact.getUserName());
                 contactIntent.putExtra("Other User FirstName",contact.getFirstName());

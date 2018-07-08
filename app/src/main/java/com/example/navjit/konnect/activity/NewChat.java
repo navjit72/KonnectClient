@@ -37,7 +37,6 @@ public class NewChat extends AppCompatActivity {
 
     List<ChatUser> users = new ArrayList<>();
     List<ChatUser> otherUsers = new ArrayList<>();
-    List<ChatUser> userToDisplay = new ArrayList<>();
     List<ChatUser> usersNotToDisplay = new ArrayList<>();
     ChatUser currentUser;
     NewChatEngine engine;

@@ -21,10 +21,6 @@ public class ChatUser implements Serializable {
         this.password = password;
     }
 
-    // public int getId(){ return id;}
-
-    // public void setId(int Id){ this.id = Id; }
-
     public String getUserName() {
         return userName;
     }

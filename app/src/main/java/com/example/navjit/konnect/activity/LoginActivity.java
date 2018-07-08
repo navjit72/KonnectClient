@@ -57,7 +57,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 for(DataSnapshot snap : loginChildren){
                     ChatUser login = snap.getValue(ChatUser.class);
-                    //Log.d("ChatUser" , "ChatUser username : " + login.getUserName());
                     usernameDetails.add(login.getUserName());
                     loginDetails.add(login);
                 }
@@ -82,12 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         if(l.getPassword().equals(editTextPassword.getText().toString()))
                         {
-                            //Intent detailsIntent =  new Intent(getApplicationContext(),MainActivity.class);
                             Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
-//                            detailsIntent.putExtra("Username", editTextUsername.getText().toString());
-//                            detailsIntent.putExtra("UserType", l.getUserType());
-//                            detailsIntent.putExtra("FirstName", l.getFirstName());
-//                            detailsIntent.putExtra("LastName", l.getLastName());
                             detailsIntent.putExtra("Current User",l);
                             startActivity(detailsIntent);
                         }
@@ -119,7 +113,6 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                       // Log.d("Login", "signIn:onComplete:" + task.isSuccessful());
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Connected to Server!",
                                     Toast.LENGTH_SHORT).show();

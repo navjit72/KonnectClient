@@ -9,14 +9,10 @@ import java.util.List;
 public class ChatEngine {
     private ChatUser user;
     private List<ChatContact> chatContacts;
-   // private List<FriendlyMessage> messageList;
 
     public ChatEngine(ChatUser user,List<ChatContact> contactList){
         this.user = user;
         chatContacts = contactList;
-//        secondUsers=secondUsersList;
-//        chatThreads=threadList;
-        //messageList=messages;
     }
     public ChatEngine(){
     }
