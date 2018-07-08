@@ -1,5 +1,6 @@
 package com.example.navjit.konnect.model;
 
 public interface ChatItemClickListener {
-    void onChatClickListener(ChatUser user,ChatThread chatThread);
+    void onChatClickListener(ChatContact contact);
+    void onNewChatClickListener(ChatUser user);
 }

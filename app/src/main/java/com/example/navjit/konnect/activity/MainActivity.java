@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.navjit.konnect.model.ChatContact;
 import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.model.FriendlyMessage;
 import com.example.navjit.konnect.R;
@@ -57,27 +58,11 @@ public class MainActivity extends AppCompatActivity
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
-    // Firebase instance variables
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
     private static String THREAD_ID;
-
-
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextView;
-        ImageView messageImageView;
-        TextView messengerTextView;
-        CircleImageView messengerImageView;
-
-        public MessageViewHolder(View v) {
-            super(v);
-            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
-            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
-        }
-    }
+    private ChatUser currentUser;
 
     private static final String TAG = "MainActivity";
     private static final int REQUEST_INVITE = 1;
@@ -98,8 +83,25 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
+    String otherUserName;
+    String otherUserFirstName;
+    String otherUserLastName;
 
-    // Firebase instance variables
+
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageTextView;
+        ImageView messageImageView;
+        TextView messengerTextView;
+        CircleImageView messengerImageView;
+
+        public MessageViewHolder(View v) {
+            super(v);
+            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
+            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,32 +110,19 @@ public class MainActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             THREAD_ID= bundle.getString("Thread");
+            currentUser = (ChatUser) getIntent().getSerializableExtra("Current User");
+            mUsername = currentUser.getFirstName() + " " + currentUser.getLastName();
+            otherUserName = bundle.getString("Other UserName");
+            otherUserFirstName = bundle.getString("Other User FirstName");
+            otherUserLastName = bundle.getString("Other User LastName");
         }
+        this.setTitle(otherUserFirstName + " " + otherUserLastName);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
-        mUsername = ANONYMOUS;
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mProgressBar = findViewById(R.id.progressBar);
-//        if (mFirebaseUser == null) {
-//            // Not signed in, launch the Sign In activity
-//            startActivity(new Intent(this, SignInActivity.class));
-//            finish();
-//            return;
-//        } else {
-//            mUsername = mFirebaseUser.getDisplayName();
-//            if (mFirebaseUser.getPhotoUrl() != null) {
-//                mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
-//            }
-//        }
-
-        mUsername = "Konnect user";
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-//                .addApi(Auth.GOOGLE_SIGN_IN_API)
-//                .build();
-
 
         //Modify your MainActivity's onCreate method by replacing mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         // with the code defined below. This code initially adds all existing messages and then listens for new child
@@ -141,6 +130,7 @@ public class MainActivity extends AppCompatActivity
         // message:
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.child(THREAD_ID);
         SnapshotParser<FriendlyMessage> parser = new SnapshotParser<FriendlyMessage>() {
             @Override
             public FriendlyMessage parseSnapshot(DataSnapshot dataSnapshot) {
@@ -170,36 +160,6 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
-
-        //DatabaseReference loginRef = mFirebaseDatabaseReference.child("login");
-//        SnapshotParser<ChatUser> loginParser = new SnapshotParser<ChatUser>() {
-//            @Override
-//            public ChatUser parseSnapshot(DataSnapshot snapshot) {
-//                ChatUser loginDetails = snapshot.getValue(ChatUser.class);
-//                if(loginDetails !=null ){
-//                    loginDetails.setId(Integer.parseInt(snapshot.getKey()));
-//                }
-//                Log.d("Hi","ChatUser Details " + loginDetails.getUserName());
-//                return loginDetails;
-//            }
-//        };
-
-//        loginRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                //ChatUser chatUser = dataSnapshot.getValue(ChatUser.class);
-//                for (DataSnapshot snap: dataSnapshot.getChildren()) {
-//                    Log.e(snap.getKey(),"ChatUser Children : " + snap.getChildrenCount());
-//                }
-//                //Log.d("ChatUser","ChatUser snapshot "+chatUser.getUserName());
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
 
         DatabaseReference messagesRef = mFirebaseDatabaseReference.child(THREAD_ID);
         FirebaseRecyclerOptions<FriendlyMessage> options =
@@ -295,8 +255,6 @@ public class MainActivity extends AppCompatActivity
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-        //mMessageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mSharedPreferences
-          //      .getInt(CodelabPreferences.FRIENDLY_MSG_LENGTH, DEFAULT_MSG_LENGTH_LIMIT))});
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

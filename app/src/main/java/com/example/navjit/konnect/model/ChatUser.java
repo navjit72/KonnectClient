@@ -1,6 +1,8 @@
 package com.example.navjit.konnect.model;
 
-public class ChatUser {
+import java.io.Serializable;
+
+public class ChatUser implements Serializable {
     //private int id;
     private String userName;
     private String firstName;
@@ -8,7 +10,7 @@ public class ChatUser {
     private String userType;
     private String password;
 
-    public ChatUser(){
+    public ChatUser() {
     }
 
     public ChatUser(String userName, String firstName, String lastName, String userType, String password) {
@@ -18,10 +20,6 @@ public class ChatUser {
         this.userType = userType;
         this.password = password;
     }
-
-   // public int getId(){ return id;}
-
-   // public void setId(int Id){ this.id = Id; }
 
     public String getUserName() {
         return userName;
@@ -61,6 +59,14 @@ public class ChatUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this.getUserName().equals(((ChatUser) obj).getUserName()))
+            return true;
+        else
+            return false;
     }
 }
 
