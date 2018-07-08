@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NewChat extends AppCompatActivity {
 
@@ -69,7 +71,8 @@ public class NewChat extends AppCompatActivity {
 
         engine = new NewChatEngine(currentUser, users);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        adapter = new NewChatAdapter(engine, new ChatItemClickListener() {
+
+        ChatItemClickListener listener =  new ChatItemClickListener() {
 
 
             @Override
@@ -106,7 +109,10 @@ public class NewChat extends AppCompatActivity {
                     }
                 });
             }
-        });
+        };
+
+        adapter = new NewChatAdapter(engine,listener);
+
         recyclerView.setAdapter(adapter);
         editTextSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -117,13 +123,19 @@ public class NewChat extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before,
                                       int count) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(NewChat.this);
-                alertDialog.setTitle("Text Changed..");
-                alertDialog.setMessage("Character : " + charSequence.toString());
-                alertDialog.setCancelable(false);
-
-                AlertDialog alert = alertDialog.create();
-                alert.show();
+                Log.d("OnTextChange","NewChat");
+                String searchText = charSequence.toString();
+                List<ChatUser> result = users.stream()
+                        .filter(line -> line.getUserName().toLowerCase().contains(searchText.toLowerCase())
+                                || line.getFirstName().toLowerCase().contains(searchText.toLowerCase())
+                                || line.getLastName().toLowerCase().contains(searchText.toLowerCase()))
+                        .collect(Collectors.toList());
+                for(ChatUser u: result){
+                    Log.d("OnTextChange ","newchat "+u);
+                }
+                engine = new NewChatEngine(currentUser,result);
+                adapter = new NewChatAdapter(engine,listener);
+                recyclerView.setAdapter(adapter);
 
             }
 

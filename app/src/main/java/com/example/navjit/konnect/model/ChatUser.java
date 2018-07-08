@@ -68,5 +68,16 @@ public class ChatUser implements Serializable {
         else
             return false;
     }
+
+    @Override
+    public String toString() {
+        return "ChatUser{" +
+                "userName='" + userName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userType='" + userType + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }
 
