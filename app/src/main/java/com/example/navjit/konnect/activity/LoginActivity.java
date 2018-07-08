@@ -153,10 +153,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void goToChatList(ChatUser user) {
         Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
-        detailsIntent.putExtra("Username", editTextUsername.getText().toString());
-        detailsIntent.putExtra("UserType", user.getUserType());
-        detailsIntent.putExtra("FirstName", user.getFirstName());
-        detailsIntent.putExtra("LastName", user.getLastName());
+        detailsIntent.putExtra("Current User", user);
         startActivity(detailsIntent);
     }
 

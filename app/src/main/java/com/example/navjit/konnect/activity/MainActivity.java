@@ -27,9 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.navjit.konnect.R;
 import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.model.FriendlyMessage;
-import com.example.navjit.konnect.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -49,8 +49,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.example.navjit.konnect.util.Keys.RECEIVED_MESSAGE;
+import static com.example.navjit.konnect.util.Keys.SENT_MESSAGE;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
             mFirebaseAdapter;
     private static String THREAD_ID;
+    private List<FriendlyMessage> threadMessages = new ArrayList<>();
 
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -98,6 +103,9 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
+    private ChatUser sender;
+    private String senderName;
+    private String receiverName;
 
     // Firebase instance variables
 
@@ -108,6 +116,9 @@ public class MainActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             THREAD_ID= bundle.getString("Thread");
+            sender = (ChatUser) bundle.getSerializable("Current User");
+            senderName = sender.getFirstName() + " "  + sender.getLastName();
+            receiverName = bundle.getString("Other User FirstName") + " " + bundle.getString("Other User LastName");
         }
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         // Set default username is anonymous.
@@ -155,7 +166,7 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot loginSnap = dataSnapshot.child("login");
+                DataSnapshot loginSnap = dataSnapshot.child("users");
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
                 ArrayList<ChatUser> loginDetails = new ArrayList<>();
 
@@ -163,6 +174,13 @@ public class MainActivity extends AppCompatActivity
                     ChatUser chatUser = snap.getValue(ChatUser.class);
 
                     loginDetails.add(chatUser);
+                }
+
+                DataSnapshot messagesSnap = dataSnapshot.child(THREAD_ID);
+                Iterable<DataSnapshot> messageChildren = messagesSnap.getChildren();
+                for (DataSnapshot snap : messageChildren) {
+                    FriendlyMessage message = snap.getValue(FriendlyMessage.class);
+                    threadMessages.add(message);
                 }
             }
 
@@ -208,9 +226,21 @@ public class MainActivity extends AppCompatActivity
                         .build();
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(options) {
             @Override
+            public int getItemViewType(int position) {
+                if (threadMessages.get(position).getName().equals(senderName)) {
+                    return SENT_MESSAGE;
+                } else {
+                    return RECEIVED_MESSAGE;
+                }
+            }
+
+            @Override
             public MessageViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-                return new MessageViewHolder(inflater.inflate(R.layout.item_message_sent, viewGroup, false));
+                if (getItemViewType(i) == SENT_MESSAGE) {
+                    return new MessageViewHolder(inflater.inflate(R.layout.item_message_sent, viewGroup, false));
+                }
+                return new MessageViewHolder(inflater.inflate(R.layout.item_message_received, viewGroup, false));
             }
 
             @Override
@@ -327,6 +357,7 @@ public class MainActivity extends AppCompatActivity
                         null /* no image */, THREAD_ID);
                 mFirebaseDatabaseReference.child(THREAD_ID)
                         .push().setValue(friendlyMessage);
+                threadMessages.add(friendlyMessage);
                 mMessageEditText.setText("");
             }
         });
