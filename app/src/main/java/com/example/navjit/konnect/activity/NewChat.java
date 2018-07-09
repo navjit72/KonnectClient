@@ -1,9 +1,9 @@
 package com.example.navjit.konnect.activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -113,7 +113,7 @@ public class NewChat extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before,
                                       int count) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getApplicationContext());
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(NewChat.this);
                 alertDialog.setTitle("Text Changed..");
                 alertDialog.setMessage("Character : " + charSequence.toString());
                 alertDialog.setCancelable(false);
