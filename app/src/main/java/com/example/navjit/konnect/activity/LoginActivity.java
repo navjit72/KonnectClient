@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -18,7 +17,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,19 +25,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import static com.example.navjit.konnect.util.Keys.SERVER_PASSWORD;
-import static com.example.navjit.konnect.util.Keys.SERVER_USER;
-
 public class LoginActivity extends AppCompatActivity {
 
     private DatabaseReference mFirebaseDatabaseReference;
-    private ArrayList<String> usernameDetails = new ArrayList<>();
-    private ArrayList<ChatUser> users =new ArrayList<>();
-    private AutoCompleteTextView editTextUsername;
-    private EditText editTextPassword;
-    private Button buttonSignIn;
+    ArrayList<String> usernameDetails = new ArrayList<>();
+    ArrayList<ChatUser> loginDetails=new ArrayList<>();
+    AutoCompleteTextView editTextUsername;
+    EditText editTextPassword;
+    Button buttonSignIn;
     private FirebaseAuth mAuth;
-    private FirebaseUser mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,43 +46,52 @@ public class LoginActivity extends AppCompatActivity {
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        connectToServer();
+        signIn();
 
-        fetchUserData();
-        addUserDataToAutoCompleteView();
-
-        buttonSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                authoriseUser();
-            }
-        });
-    }
-
-    private void addUserDataToAutoCompleteView() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line,usernameDetails);
-        editTextUsername.setAdapter(adapter);
-    }
-
-    private void fetchUserData() {
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot loginSnap = dataSnapshot.child("users");
+                DataSnapshot loginSnap = dataSnapshot.child("login");
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
 
                 for(DataSnapshot snap : loginChildren){
                     ChatUser login = snap.getValue(ChatUser.class);
-                    //Log.d("ChatUser" , "ChatUser username : " + login.getUserName());
                     usernameDetails.add(login.getUserName());
-                    users.add(login);
+                    loginDetails.add(login);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.d("onCancelled", databaseError.getDetails());
+
+            }
+        });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line,usernameDetails);
+        editTextUsername.setAdapter(adapter);
+
+        buttonSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for(ChatUser l : loginDetails)
+                {
+                    if(l.getUserName().equals(editTextUsername.getText().toString()))
+                    {
+                        if(l.getPassword().equals(editTextPassword.getText().toString()))
+                        {
+                            Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
+                            detailsIntent.putExtra("Current User",l);
+                            startActivity(detailsIntent);
+                        }
+                        else
+                        {
+                            Toast.makeText(getApplicationContext(),"Invalid Password. Please try again." ,Toast.LENGTH_LONG).show();
+                            editTextUsername.setText("");
+                            editTextPassword.setText("");
+                        }
+                    }
+                }
             }
         });
     }
@@ -100,65 +103,23 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword.setText("");
     }
 
-    private void authoriseUser() {
-        String username = editTextUsername.getText().toString();
-        String password = editTextPassword.getText().toString();
+    private void signIn() {
 
-        if (username.equals("") || password.equals("")) {
-            createToast("Please enter username and password");
-        } else {
-            trySignIn(username, password);
-        }
-    }
+        String email = "info@konnect.com";
+        String password = "password";
 
-    private void trySignIn(String username, String password) {
-        if (usernameDetails.contains(username)) {
-            ChatUser loggedInUser = getUser(username);
-            if (loggedInUser.getPassword().equals(password)) {
-                goToChatList(loggedInUser);
-            } else {
-                createToast("Your Username/Password is incorrect");
-            }
-        } else {
-            createToast("Sign In Failed");
-        }
-    }
-
-    private ChatUser getUser(String username) {
-        for(ChatUser user : users)
-        {
-            if(user.getUserName().equals(username)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    private void connectToServer() {
-        mAuth.signInWithEmailAndPassword(SERVER_USER, SERVER_PASSWORD)
+        mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("Login", "authoriseUser:onComplete:" + task.isSuccessful());
                         if (task.isSuccessful()) {
-                            createToast("Connected to server");
+                            Toast.makeText(LoginActivity.this, "Connected to Server!",
+                                    Toast.LENGTH_SHORT).show();
                         } else {
-                            createToast("Could not connect to server");
-                            editTextUsername.setText("");
-                            editTextPassword.setText("");
+                            Toast.makeText(LoginActivity.this, "Sign In Failed",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-    }
-
-    private void goToChatList(ChatUser user) {
-        Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
-        detailsIntent.putExtra("Current User", user);
-        startActivity(detailsIntent);
-    }
-
-    private void createToast(String message) {
-        Toast.makeText(LoginActivity.this, message,
-                Toast.LENGTH_SHORT).show();
     }
 }
