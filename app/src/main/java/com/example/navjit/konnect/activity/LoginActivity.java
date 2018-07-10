@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn() {
 
         String email = "info@konnect.com";
-        String password = "konnect";
+        String password = "password";
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
