@@ -1,7 +1,5 @@
 package com.example.navjit.konnect.model;
 
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 public class ChatUser implements Serializable {
@@ -75,14 +73,6 @@ public class ChatUser implements Serializable {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     @Override
