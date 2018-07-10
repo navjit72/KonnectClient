@@ -61,7 +61,7 @@ public class ChatListActivity extends AppCompatActivity {
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot userSnap = dataSnapshot.child("login");
+                DataSnapshot userSnap = dataSnapshot.child("users");
                 Iterable<DataSnapshot> userDetails = userSnap.getChildren();
                 for(DataSnapshot s : userDetails)
                 {

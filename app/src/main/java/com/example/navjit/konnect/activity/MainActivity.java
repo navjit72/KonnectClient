@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot loginSnap = dataSnapshot.child("login");
+                DataSnapshot loginSnap = dataSnapshot.child("users");
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
                 ArrayList<ChatUser> loginDetails = new ArrayList<>();
 

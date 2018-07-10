@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot loginSnap = dataSnapshot.child("login");
+                DataSnapshot loginSnap = dataSnapshot.child("users");
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
 
                 for(DataSnapshot snap : loginChildren){
@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn() {
 
         String email = "info@konnect.com";
-        String password = "konnect";
+        String password = "password";
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
