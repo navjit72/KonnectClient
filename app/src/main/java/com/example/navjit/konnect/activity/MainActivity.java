@@ -157,7 +157,8 @@ public class MainActivity extends AppCompatActivity
             public FriendlyMessage parseSnapshot(DataSnapshot dataSnapshot) {
                 FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
                 if (friendlyMessage != null) {
-                        friendlyMessage.setId(dataSnapshot.getKey());
+                    friendlyMessage.setId(dataSnapshot.getKey());
+                    threadMessages.add(friendlyMessage);
                 }
                 return friendlyMessage;
             }
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot loginSnap = dataSnapshot.child("users");
+                DataSnapshot loginSnap = dataSnapshot.child("login");
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
                 ArrayList<ChatUser> loginDetails = new ArrayList<>();
 
@@ -237,7 +238,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public MessageViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
                 LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-                if (getItemViewType(i) == SENT_MESSAGE) {
+                if (i == SENT_MESSAGE) {
                     return new MessageViewHolder(inflater.inflate(R.layout.item_message_sent, viewGroup, false));
                 }
                 return new MessageViewHolder(inflater.inflate(R.layout.item_message_received, viewGroup, false));
@@ -357,7 +358,6 @@ public class MainActivity extends AppCompatActivity
                         null /* no image */, THREAD_ID);
                 mFirebaseDatabaseReference.child(THREAD_ID)
                         .push().setValue(friendlyMessage);
-                threadMessages.add(friendlyMessage);
                 mMessageEditText.setText("");
             }
         });
