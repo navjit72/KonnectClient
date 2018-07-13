@@ -26,4 +26,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="meeting_invite">Set a meeting</string>
     <string name="title_activity_chat_list">ChatListActivity</string>
+
+    <!-- Strings related to chatBox -->
+    <string name="send">Send</string>
 </resources>
