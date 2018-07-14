@@ -362,4 +362,50 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d("thread ID", "thread id : " + THREAD_ID);
+        Log.d("Sender","sender username : " + currentUser.getUserName());
+        Log.d("Receiver", "receiver username : "  + otherUserName);
+
+        if(mFirebaseDatabaseReference.child(THREAD_ID)==null){
+            Log.d("Thread id","null");
+        }
+        else {
+            Log.d("Thread id", "not null");
+        }
+
+        mFirebaseDatabaseReference.child(THREAD_ID).addListenerForSingleValueEvent(new ValueEventListener() {
+            Long cnt=0L;
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("MainActivity","msg : "+ dataSnapshot.getValue());
+                if(dataSnapshot.getValue() == null){
+                    mFirebaseDatabaseReference.child("threadCounter").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {;
+                        cnt = Long.parseLong(dataSnapshot.getValue().toString());
+                        Log.d("thread counter","cnt : " + cnt);
+                        mFirebaseDatabaseReference.child("thread").child(cnt.toString()).removeValue();
+                        cnt -= 1;
+                        mFirebaseDatabaseReference.child("threadCounter").setValue(cnt);
+                        }
+
+                        @Override
+                        public void onCancelled( DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 }
