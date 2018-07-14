@@ -1,10 +1,10 @@
 package com.example.navjit.konnect.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.R;
+import com.example.navjit.konnect.model.ChatUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText editTextPassword;
     Button buttonSignIn;
     private FirebaseAuth mAuth;
+    private SharedPreferences userPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonSignIn = findViewById(R.id.buttonSignIn);
+        userPreferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -75,26 +78,46 @@ public class LoginActivity extends AppCompatActivity {
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for(ChatUser l : loginDetails)
-                {
-                    if(l.getUserName().equals(editTextUsername.getText().toString()))
-                    {
-                        if(l.getPassword().equals(editTextPassword.getText().toString()))
-                        {
-                            Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
-                            detailsIntent.putExtra("Current User",l);
-                            startActivity(detailsIntent);
-                        }
-                        else
-                        {
-                            Toast.makeText(getApplicationContext(),"Invalid Password. Please try again." ,Toast.LENGTH_LONG).show();
-                            editTextUsername.setText("");
-                            editTextPassword.setText("");
-                        }
-                    }
-                }
+                authoriseUser();
             }
         });
+
+        if (userPreferences.contains("loggedInUser")) {
+            Gson gson = new Gson();
+            String userString = userPreferences.getString("loggedInUser", "");
+            ChatUser loggedInUser = gson.fromJson(userString, ChatUser.class);
+            goToChatDetails(loggedInUser);
+        }
+    }
+
+    private void authoriseUser() {
+        for(ChatUser l : loginDetails)
+        {
+            if(l.getUserName().equals(editTextUsername.getText().toString()))
+            {
+                if(l.getPassword().equals(editTextPassword.getText().toString()))
+                {
+                    Gson gson = new Gson();
+                    String userString = gson.toJson(l);
+                    SharedPreferences.Editor editor = userPreferences.edit();
+                    editor.putString("loggedInUser", userString);
+                    editor.apply();
+                    goToChatDetails(l);
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"Invalid Password. Please try again." ,Toast.LENGTH_LONG).show();
+                    editTextUsername.setText("");
+                    editTextPassword.setText("");
+                }
+            }
+        }
+    }
+
+    private void goToChatDetails(ChatUser l) {
+        Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
+        detailsIntent.putExtra("Current User",l);
+        startActivity(detailsIntent);
     }
 
     @Override

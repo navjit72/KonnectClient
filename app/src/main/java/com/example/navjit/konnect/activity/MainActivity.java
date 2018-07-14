@@ -34,7 +34,6 @@ import com.example.navjit.konnect.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -86,6 +85,7 @@ public class MainActivity extends AppCompatActivity
     String otherUserName;
     String otherUserFirstName;
     String otherUserLastName;
+    private SharedPreferences userPreferences;
 
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Bundle bundle = getIntent().getExtras();
+        userPreferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
         if (bundle != null) {
             THREAD_ID= bundle.getString("Thread");
             currentUser = (ChatUser) getIntent().getSerializableExtra("Current User");
@@ -338,7 +339,9 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.sign_out_menu:
                 mFirebaseAuth.signOut();
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                SharedPreferences.Editor editor = userPreferences.edit();
+                editor.remove("loggedInUser");
+                editor.apply();
                 mUsername = ANONYMOUS;
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
