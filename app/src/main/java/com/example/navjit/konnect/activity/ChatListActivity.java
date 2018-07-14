@@ -1,9 +1,12 @@
 package com.example.navjit.konnect.activity;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -77,6 +80,7 @@ public class ChatListActivity extends AppCompatActivity {
 
                 for (DataSnapshot snap : threadDetails) {
                     ChatThread chatThread = snap.getValue(ChatThread.class);
+                    userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
                     if (userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
                         chatThreadDetails.add(chatThread);
                     }
@@ -183,4 +187,47 @@ public class ChatListActivity extends AppCompatActivity {
         // l̥Toast.makeText(this, "OnRestart", Toast.LENGTH_LONG).show();
         update();
     }
+
+    @Override
+    public void onBackPressed() {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this,R.style.AlertDialogTheme);
+        // Setting Alert Dialog Title
+        alertDialogBuilder.setTitle("Confirm Exit");
+        // Icon Of Alert Dialog
+        //alertDialogBuilder.setIcon(R.drawable.);
+        // Setting Alert Dialog Message
+        alertDialogBuilder.setMessage("Are you sure you want to exit?");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                ChatListActivity.super.onBackPressed();
+                finish();
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ChatListActivity.super.onBackPressed();
+                Toast.makeText(ChatListActivity.this,"You clicked No",Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertDialogBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(),"You clicked Cancel",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        alertDialogBuilder.show();
+
+//        AlertDialog alertDialog = alertDialogBuilder.create();
+//        alertDialog.show();
+    }
 }
+
+//TODO overflow options in inflator

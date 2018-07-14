@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity
     String otherUserFirstName;
     String otherUserLastName;
     private SharedPreferences userPreferences;
-
+    ValueEventListener valueEventListener;
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
@@ -406,6 +406,8 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
+        Intent chatListIntent = new Intent(this,ChatListActivity.class);
+        chatListIntent.putExtra("Current User",currentUser);
+        startActivity(chatListIntent);
     }
 }
