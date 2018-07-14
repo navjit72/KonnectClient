@@ -407,6 +407,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
         Intent chatListIntent = new Intent(this,ChatListActivity.class);
+        chatListIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         chatListIntent.putExtra("Current User",currentUser);
         startActivity(chatListIntent);
     }

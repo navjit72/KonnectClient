@@ -3,6 +3,7 @@ package com.example.navjit.konnect.activity;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -47,6 +49,7 @@ public class ChatListActivity extends AppCompatActivity {
     RecyclerView.Adapter adapter;
     ChatEngine engine;
     ValueEventListener valueEventListener;
+    private SharedPreferences userPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +59,14 @@ public class ChatListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
-        }
+//        Bundle bundle = getIntent().getExtras();
+//        if (bundle != null) {
+//            userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
+//        }
+        userPreferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
+        Gson gson = new Gson();
+        String userString = userPreferences.getString("loggedInUser", "");
+        userOne = gson.fromJson(userString, ChatUser.class);
         valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -80,7 +87,7 @@ public class ChatListActivity extends AppCompatActivity {
 
                 for (DataSnapshot snap : threadDetails) {
                     ChatThread chatThread = snap.getValue(ChatThread.class);
-                    userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
+                    //userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
                     if (userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
                         chatThreadDetails.add(chatThread);
                     }
@@ -205,7 +212,8 @@ public class ChatListActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
                 ChatListActivity.super.onBackPressed();
-                finish();
+                finishAndRemoveTask();
+                //System.exit(0);
             }
         });
 
@@ -214,6 +222,7 @@ public class ChatListActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 ChatListActivity.super.onBackPressed();
                 Toast.makeText(ChatListActivity.this,"You clicked No",Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ChatListActivity.this,ChatListActivity.class));
             }
         });
         alertDialogBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
