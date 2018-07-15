@@ -23,7 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
+import com.google.gson.Gson;;
 
 import java.util.ArrayList;
 
@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private DatabaseReference mFirebaseDatabaseReference;
     ArrayList<String> usernameDetails = new ArrayList<>();
-    ArrayList<ChatUser> loginDetails=new ArrayList<>();
+    ArrayList<ChatUser> loginDetails = new ArrayList<>();
     AutoCompleteTextView editTextUsername;
     EditText editTextPassword;
     Button buttonSignIn;
@@ -52,27 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         signIn();
 
-        mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot loginSnap = dataSnapshot.child("login");
-                Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
-
-                for(DataSnapshot snap : loginChildren){
-                    ChatUser login = snap.getValue(ChatUser.class);
-                    usernameDetails.add(login.getUserName());
-                    loginDetails.add(login);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line,usernameDetails);
+                android.R.layout.simple_dropdown_item_1line, usernameDetails);
         editTextUsername.setAdapter(adapter);
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
@@ -91,22 +72,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authoriseUser() {
-        for(ChatUser l : loginDetails)
-        {
-            if(l.getUserName().equals(editTextUsername.getText().toString()))
-            {
-                if(l.getPassword().equals(editTextPassword.getText().toString()))
-                {
+        for (ChatUser l : loginDetails) {
+            if (l.getUserName().equals(editTextUsername.getText().toString())) {
+                if (l.getPassword().equals(editTextPassword.getText().toString())) {
                     Gson gson = new Gson();
                     String userString = gson.toJson(l);
                     SharedPreferences.Editor editor = userPreferences.edit();
                     editor.putString("loggedInUser", userString);
                     editor.apply();
                     goToChatDetails(l);
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"Invalid Password. Please try again." ,Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Invalid Password. Please try again.", Toast.LENGTH_LONG).show();
                     editTextUsername.setText("");
                     editTextPassword.setText("");
                 }
@@ -115,9 +91,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToChatDetails(ChatUser l) {
-        Intent detailsIntent =  new Intent(getApplicationContext(),ChatListActivity.class);
-        detailsIntent.putExtra("Current User",l);
+        Intent detailsIntent = new Intent(getApplicationContext(), ChatListActivity.class);
+        detailsIntent.putExtra("Current User", l);
         startActivity(detailsIntent);
+        finish();
     }
 
     @Override
@@ -139,6 +116,24 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, "Connected to Server!",
                                     Toast.LENGTH_SHORT).show();
+                            mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    DataSnapshot loginSnap = dataSnapshot.child("login");
+                                    Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
+
+                                    for (DataSnapshot snap : loginChildren) {
+                                        ChatUser login = snap.getValue(ChatUser.class);
+                                        usernameDetails.add(login.getUserName());
+                                        loginDetails.add(login);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                         } else {
                             Toast.makeText(LoginActivity.this, "Sign In Failed",
                                     Toast.LENGTH_SHORT).show();
