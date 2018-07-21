@@ -226,9 +226,6 @@ public class ChatListActivity extends AppCompatActivity {
         alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ChatListActivity.super.onBackPressed();
-                Toast.makeText(ChatListActivity.this,"You clicked No",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ChatListActivity.this,ChatListActivity.class));
             }
         });
         alertDialogBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
