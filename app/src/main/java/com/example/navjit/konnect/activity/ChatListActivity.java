@@ -91,7 +91,10 @@ public class ChatListActivity extends AppCompatActivity {
                 for (DataSnapshot snap : threadDetails) {
                     ChatThread chatThread = snap.getValue(ChatThread.class);
                     //userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
-                    if (userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
+                    if(chatThread.getThreadId().equals("broadcast")){
+                        chatThreadDetails.add(chatThread);
+                    }
+                    else if (userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
                         chatThreadDetails.add(chatThread);
                     }
                 }
@@ -115,7 +118,7 @@ public class ChatListActivity extends AppCompatActivity {
                         friendlyMessage = snap.getValue(FriendlyMessage.class);
                     }
                     friendlyMessageList.add(friendlyMessage);
-                    Log.d("Friendly Message", "Friendly Message " + friendlyMessage.getThreadId() + " : " + friendlyMessage.getText() + friendlyMessage.getName());
+                    Log.d("Friendly Message", "Friendly Message " + friendlyMessage.getThreadId() + " : " + friendlyMessage.getText() + " "+friendlyMessage.getName());
                 }
                 for (int i = 0; i < friendlyMessageList.size(); i++) {
                     ChatContact contact = new ChatContact();
@@ -174,14 +177,14 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-    //    Toast.makeText(this, "OnResume", Toast.LENGTH_LONG).show();
+        //    Toast.makeText(this, "OnResume", Toast.LENGTH_LONG).show();
         update();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-      //  Toast.makeText(this, "OnPause", Toast.LENGTH_LONG).show();
+        //  Toast.makeText(this, "OnPause", Toast.LENGTH_LONG).show();
         mFirebaseDatabaseReference.removeEventListener(valueEventListener);
     }
 
