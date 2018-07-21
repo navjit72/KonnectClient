@@ -123,7 +123,7 @@ public class ChatListActivity extends AppCompatActivity {
                 for (int i = 0; i < friendlyMessageList.size(); i++) {
                     ChatContact contact = new ChatContact();
                     contact.setFirstName(secondUsers.get(i).getFirstName());
-                    contact.setLastName(secondUsers.get(i).getLastName());
+                    contact.setLastName(!userOne.getUserType().equals("instructor") && friendlyMessageList.get(i).getThreadId().equals("broadcast") ? secondUsers.get(i).getLastName()+" (broadcast) ":secondUsers.get(i).getLastName() );
                     contact.setThreadId(friendlyMessageList.get(i).getThreadId());
                     contact.setLastMessage(friendlyMessageList.get(i).getText());
                     contact.setUserName(secondUsers.get(i).getUserName());

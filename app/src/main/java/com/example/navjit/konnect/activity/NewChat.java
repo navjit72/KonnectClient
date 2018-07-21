@@ -53,6 +53,8 @@ public class NewChat extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ChatUser instructor = null;
+        int count=0;//to check how many times the instructor is present.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_chat);
         recyclerView = findViewById(R.id.recyclerView);
@@ -66,7 +68,15 @@ public class NewChat extends AppCompatActivity {
         }
         usersNotToDisplay.addAll(otherUsers);
         usersNotToDisplay.add(currentUser);
-
+        for(ChatUser u :otherUsers){
+            if(u.getUserType().equals("instructor")) {
+                count++;
+                instructor = u;
+            }
+        }
+        if(count==1){
+            usersNotToDisplay.remove(instructor);
+        }
         users.removeAll(usersNotToDisplay);
 
         users = users.stream()
