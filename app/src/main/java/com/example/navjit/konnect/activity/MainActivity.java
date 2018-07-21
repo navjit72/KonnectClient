@@ -13,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,15 +24,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.navjit.konnect.model.ChatContact;
+import com.example.navjit.konnect.R;
 import com.example.navjit.konnect.model.ChatUser;
 import com.example.navjit.konnect.model.FriendlyMessage;
-import com.example.navjit.konnect.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -51,6 +53,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.view.View.GONE;
 
 public class MainActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
@@ -92,14 +96,16 @@ public class MainActivity extends AppCompatActivity
         TextView messageTextView;
         ImageView messageImageView;
         TextView messengerTextView;
-        CircleImageView messengerImageView;
+        CircleImageView sentMessengerImageView;
+        CircleImageView receivedMessengerImageView;
 
         public MessageViewHolder(View v) {
             super(v);
-            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
-            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+            receivedMessengerImageView = itemView.findViewById(R.id.receivedMessengerImageView);
+            messageTextView = itemView.findViewById(R.id.messageTextView);
+            sentMessengerImageView = itemView.findViewById(R.id.sentMessengerImageView);
+            messageImageView = itemView.findViewById(R.id.messageImageView);
+            messengerTextView = itemView.findViewById(R.id.messengerTextView);
         }
     }
 
@@ -180,11 +186,16 @@ public class MainActivity extends AppCompatActivity
                                             FriendlyMessage friendlyMessage) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 if (friendlyMessage.getText() != null) {
-                    viewHolder.messageTextView.setText(friendlyMessage.getText());
-                    viewHolder.messageTextView.setVisibility(TextView.VISIBLE);
-                    viewHolder.messageImageView.setVisibility(ImageView.GONE);
 
-                } else if (friendlyMessage.getImageUrl() != null) {
+                    if (isCurrentUserSender(friendlyMessage)) {
+                        configureLayoutForSender(viewHolder, friendlyMessage);
+                    } else {
+                        configureLayoutForReceiver(viewHolder, friendlyMessage);
+                    }
+
+                }
+
+                else if (friendlyMessage.getImageUrl() != null) {
                     String imageUrl = friendlyMessage.getImageUrl();
                     if (imageUrl.startsWith("gs://")) {
                         StorageReference storageReference = FirebaseStorage.getInstance()
@@ -214,14 +225,18 @@ public class MainActivity extends AppCompatActivity
                     viewHolder.messageTextView.setVisibility(TextView.GONE);
                 }
 
-                viewHolder.messengerTextView.setText(friendlyMessage.getName());
                 if (friendlyMessage.getPhotoUrl() == null) {
-                    viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,
-                            R.drawable.ic_account_circle_black_36dp));
+                    if (isCurrentUserSender(friendlyMessage)) {
+                        viewHolder.sentMessengerImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.ic_account_circle_black_36dp));
+                    } else {
+                        viewHolder.receivedMessengerImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.ic_account_circle_black_36dp));
+                    }
                 } else {
                     Glide.with(MainActivity.this)
                             .load(friendlyMessage.getPhotoUrl())
-                            .into(viewHolder.messengerImageView);
+                            .into(viewHolder.sentMessengerImageView);
                 }
             }
         };
@@ -301,6 +316,37 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, REQUEST_IMAGE);
             }
         });
+    }
+
+    private boolean isCurrentUserSender(FriendlyMessage friendlyMessage) {
+        return friendlyMessage.getName().equals(mUsername);
+    }
+
+    private void configureLayoutForReceiver(MessageViewHolder viewHolder, FriendlyMessage friendlyMessage) {
+        viewHolder.receivedMessengerImageView.setVisibility(View.VISIBLE);
+        viewHolder.sentMessengerImageView.setVisibility(GONE);
+        viewHolder.messageImageView.setVisibility(GONE);
+        viewHolder.messageTextView.setText(friendlyMessage.getText());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.START;
+        viewHolder.messengerTextView.setText(friendlyMessage.getName());
+        viewHolder.messageTextView.setLayoutParams(params);
+        viewHolder.messengerTextView.setLayoutParams(params);
+    }
+
+    private void configureLayoutForSender(MessageViewHolder viewHolder, FriendlyMessage friendlyMessage) {
+        viewHolder.sentMessengerImageView.setVisibility(View.VISIBLE);
+        viewHolder.receivedMessengerImageView.setVisibility(GONE);
+        viewHolder.messageImageView.setVisibility(GONE);
+        viewHolder.messageTextView.setText(friendlyMessage.getText());
+        viewHolder.messengerTextView.setText(friendlyMessage.getName());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.END;
+        params.setMarginEnd((int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 10, getResources()
+                        .getDisplayMetrics()));
+        viewHolder.messageTextView.setLayoutParams(params);
+        viewHolder.messengerTextView.setLayoutParams(params);
     }
 
     @Override
