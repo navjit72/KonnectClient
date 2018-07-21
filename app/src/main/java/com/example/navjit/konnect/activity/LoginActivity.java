@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void authoriseUser() {
         for (ChatUser l : loginDetails) {
-            if (l.getUserName().equals(editTextUsername.getText().toString())) {
+            if (l.getUserName().equals(editTextUsername.getText().toString()) && !l.getUserType().equals("userType")) {
                 if (l.getPassword().equals(editTextPassword.getText().toString())) {
                     Gson gson = new Gson();
                     String userString = gson.toJson(l);
