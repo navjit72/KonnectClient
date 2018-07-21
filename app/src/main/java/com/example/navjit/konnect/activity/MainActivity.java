@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity
             public FriendlyMessage parseSnapshot(DataSnapshot dataSnapshot) {
                 FriendlyMessage friendlyMessage = dataSnapshot.getValue(FriendlyMessage.class);
                 if (friendlyMessage != null) {
-                        friendlyMessage.setId(dataSnapshot.getKey());
+                    friendlyMessage.setId(dataSnapshot.getKey());
                 }
                 return friendlyMessage;
             }
@@ -271,6 +271,7 @@ public class MainActivity extends AppCompatActivity
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
+
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -289,8 +290,13 @@ public class MainActivity extends AppCompatActivity
             public void afterTextChanged(Editable editable) {
             }
         });
-
+        mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
         mSendButton = (Button) findViewById(R.id.sendButton);
+        if(THREAD_ID.equals("broadcast") && currentUser.getUserType().equals("student")){
+            mAddMessageImageView.setVisibility(View.GONE);
+            mSendButton.setVisibility(View.GONE);
+            mMessageEditText.setVisibility(View.GONE);
+        }
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -304,8 +310,6 @@ public class MainActivity extends AppCompatActivity
                 mMessageEditText.setText("");
             }
         });
-
-        mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
         mAddMessageImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -377,6 +381,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
+        if(currentUser.getUserType().equals("student")) {
+            menu.findItem(R.id.meeting_invite).setVisible(false);
+        }
         return true;
     }
 
@@ -432,11 +439,11 @@ public class MainActivity extends AppCompatActivity
                     mFirebaseDatabaseReference.child("threadCounter").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {;
-                        cnt = Long.parseLong(dataSnapshot.getValue().toString());
-                        Log.d("thread counter","cnt : " + cnt);
-                        mFirebaseDatabaseReference.child("thread").child(cnt.toString()).removeValue();
-                        cnt -= 1;
-                        mFirebaseDatabaseReference.child("threadCounter").setValue(cnt);
+                            cnt = Long.parseLong(dataSnapshot.getValue().toString());
+                            Log.d("thread counter","cnt : " + cnt);
+                            mFirebaseDatabaseReference.child("thread").child(cnt.toString()).removeValue();
+                            cnt -= 1;
+                            mFirebaseDatabaseReference.child("threadCounter").setValue(cnt);
                         }
 
                         @Override

@@ -91,7 +91,10 @@ public class ChatListActivity extends AppCompatActivity {
                 for (DataSnapshot snap : threadDetails) {
                     ChatThread chatThread = snap.getValue(ChatThread.class);
                     //userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
-                    if (userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
+                    if(chatThread.getThreadId().equals("broadcast")){
+                        chatThreadDetails.add(chatThread);
+                    }
+                    else if (userOne.getUserName().equals(chatThread.getMessengerOne()) || userOne.getUserName().equals(chatThread.getMessengerTwo())) {
                         chatThreadDetails.add(chatThread);
                     }
                 }
@@ -115,12 +118,12 @@ public class ChatListActivity extends AppCompatActivity {
                         friendlyMessage = snap.getValue(FriendlyMessage.class);
                     }
                     friendlyMessageList.add(friendlyMessage);
-                    Log.d("Friendly Message", "Friendly Message " + friendlyMessage.getThreadId() + " : " + friendlyMessage.getText() + friendlyMessage.getName());
+                    Log.d("Friendly Message", "Friendly Message " + friendlyMessage.getThreadId() + " : " + friendlyMessage.getText() + " "+friendlyMessage.getName());
                 }
                 for (int i = 0; i < friendlyMessageList.size(); i++) {
                     ChatContact contact = new ChatContact();
                     contact.setFirstName(secondUsers.get(i).getFirstName());
-                    contact.setLastName(secondUsers.get(i).getLastName());
+                    contact.setLastName(!userOne.getUserType().equals("instructor") && friendlyMessageList.get(i).getThreadId().equals("broadcast") ? secondUsers.get(i).getLastName()+" (broadcast) ":secondUsers.get(i).getLastName() );
                     contact.setThreadId(friendlyMessageList.get(i).getThreadId());
                     contact.setLastMessage(friendlyMessageList.get(i).getText());
                     contact.setUserName(secondUsers.get(i).getUserName());
@@ -174,14 +177,14 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-    //    Toast.makeText(this, "OnResume", Toast.LENGTH_LONG).show();
+        //    Toast.makeText(this, "OnResume", Toast.LENGTH_LONG).show();
         update();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-      //  Toast.makeText(this, "OnPause", Toast.LENGTH_LONG).show();
+        //  Toast.makeText(this, "OnPause", Toast.LENGTH_LONG).show();
         mFirebaseDatabaseReference.removeEventListener(valueEventListener);
     }
 
@@ -223,9 +226,6 @@ public class ChatListActivity extends AppCompatActivity {
         alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ChatListActivity.super.onBackPressed();
-                Toast.makeText(ChatListActivity.this,"You clicked No",Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ChatListActivity.this,ChatListActivity.class));
             }
         });
         alertDialogBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {

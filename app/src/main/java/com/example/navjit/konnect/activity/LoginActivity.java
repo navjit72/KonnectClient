@@ -1,9 +1,11 @@
 package com.example.navjit.konnect.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -73,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void authoriseUser() {
         for (ChatUser l : loginDetails) {
-            if (l.getUserName().equals(editTextUsername.getText().toString())) {
+            if (l.getUserName().equals(editTextUsername.getText().toString()) && !l.getUserType().equals("userType")) {
                 if (l.getPassword().equals(editTextPassword.getText().toString())) {
                     Gson gson = new Gson();
                     String userString = gson.toJson(l);
@@ -141,4 +143,46 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    @Override
+    public void onBackPressed() {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this,R.style.AlertDialogTheme);
+        // Setting Alert Dialog Title
+        alertDialogBuilder.setTitle("Confirm Exit");
+        // Icon Of Alert Dialog
+        //alertDialogBuilder.setIcon(R.drawable.);
+        // Setting Alert Dialog Message
+        alertDialogBuilder.setMessage("Are you sure you want to exit?");
+        alertDialogBuilder.setCancelable(false);
+
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                LoginActivity.super.onBackPressed();
+                finishAndRemoveTask();
+                //System.exit(0);
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alertDialogBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(),"You clicked Cancel",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        alertDialogBuilder.show();
+
+//        AlertDialog alertDialog = alertDialogBuilder.create();
+//        alertDialog.show();
+    }
+
 }

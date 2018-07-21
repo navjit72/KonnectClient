@@ -53,6 +53,8 @@ public class NewChat extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ChatUser instructor = null;
+        int count=0;//to check how many times the instructor is present.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_chat);
         recyclerView = findViewById(R.id.recyclerView);
@@ -66,13 +68,26 @@ public class NewChat extends AppCompatActivity {
         }
         usersNotToDisplay.addAll(otherUsers);
         usersNotToDisplay.add(currentUser);
-
+        for(ChatUser u :otherUsers){
+            if(u.getUserType().equals("instructor")) {
+                count++;
+                instructor = u;
+            }
+        }
+        if(count==1){
+            usersNotToDisplay.remove(instructor);
+        }
         users.removeAll(usersNotToDisplay);
+
+        users = users.stream()
+                .filter(line -> line.getUserType().toLowerCase().equals("student") ||
+                        line.getUserType().toLowerCase().equals("instructor"))
+                .collect(Collectors.toList());
 
         engine = new NewChatEngine(currentUser, users);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-        ChatItemClickListener listener =  new ChatItemClickListener() {
+        ChatItemClickListener listener = new ChatItemClickListener() {
 
 
             @Override
@@ -86,19 +101,19 @@ public class NewChat extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         threadCounter = dataSnapshot.getValue(Long.class);
-                        threadCounter+=1;
+                        threadCounter += 1;
                         mFirebaseDatabaseReference.child("threadCounter").setValue(threadCounter);
-                        ChatThread chatThread = new ChatThread("messages"+(100+threadCounter),currentUser.getUserName(),user.getUserName());
-                        mFirebaseDatabaseReference.child("thread").child(""+threadCounter).setValue(chatThread);
+                        ChatThread chatThread = new ChatThread("messages" + (100 + threadCounter), currentUser.getUserName(), user.getUserName());
+                        mFirebaseDatabaseReference.child("thread").child("" + threadCounter).setValue(chatThread);
 
                         Intent contactIntent = new Intent(getApplicationContext(), MainActivity.class);
                         contactIntent.putExtra("Current User", currentUser);
-                        contactIntent.putExtra("Other UserName",user.getUserName());
+                        contactIntent.putExtra("Other UserName", user.getUserName());
                         //contactIntent.putExtra("Other User", user);
-                        contactIntent.putExtra("Other User FirstName",user.getFirstName());
-                        contactIntent.putExtra("Other User LastName",user.getLastName());
-                        contactIntent.putExtra("New Chat",true);
-                        String threadId = "messages"+(100+threadCounter);
+                        contactIntent.putExtra("Other User FirstName", user.getFirstName());
+                        contactIntent.putExtra("Other User LastName", user.getLastName());
+                        contactIntent.putExtra("New Chat", true);
+                        String threadId = "messages" + (100 + threadCounter);
                         contactIntent.putExtra("Thread", threadId);
                         startActivity(contactIntent);
                     }
@@ -111,7 +126,7 @@ public class NewChat extends AppCompatActivity {
             }
         };
 
-        adapter = new NewChatAdapter(engine,listener);
+        adapter = new NewChatAdapter(engine, listener);
 
         recyclerView.setAdapter(adapter);
         editTextSearchBar.addTextChangedListener(new TextWatcher() {
@@ -123,18 +138,18 @@ public class NewChat extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before,
                                       int count) {
-                Log.d("OnTextChange","NewChat");
+                Log.d("OnTextChange", "NewChat");
                 String searchText = charSequence.toString();
                 List<ChatUser> result = users.stream()
                         .filter(line -> line.getUserName().toLowerCase().contains(searchText.toLowerCase())
                                 || line.getFirstName().toLowerCase().contains(searchText.toLowerCase())
                                 || line.getLastName().toLowerCase().contains(searchText.toLowerCase()))
                         .collect(Collectors.toList());
-                for(ChatUser u: result){
-                    Log.d("OnTextChange ","newchat "+u);
+                for (ChatUser u : result) {
+                    Log.d("OnTextChange ", "newchat " + u);
                 }
-                engine = new NewChatEngine(currentUser,result);
-                adapter = new NewChatAdapter(engine,listener);
+                engine = new NewChatEngine(currentUser, result);
+                adapter = new NewChatAdapter(engine, listener);
                 recyclerView.setAdapter(adapter);
 
             }
