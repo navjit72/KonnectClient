@@ -1,9 +1,8 @@
-/****************************************************************
+/***************************************************************************
  *     Author : Navjit Kaur
  *
- *     This entity class is to store the fields combined from
- *     chat user and chat thread to display the last message sent.
- *****************************************************************/
+ *     This entity class is to load the recycler view in chat list activity.
+ ***************************************************************************/
 
 package com.example.navjit.konnect.model;
 
@@ -28,6 +27,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         listener=chatItemClickListener;
     }
 
+    //create a new view
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item,parent,false);
@@ -36,6 +36,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     }
 
+    //get element from the chat engine at that position and replace the content of view with that element
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ChatContact contact =chatEngine.getChatContact(position);
@@ -45,6 +46,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
     }
 
+    //returning size of dataset from chat engine
     @Override
     public int getItemCount() {
         return chatEngine.getChatContacts().size();
@@ -62,6 +64,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             lastMsg = view.findViewById(R.id.textViewLastMsg);
         }
 
+        //binding the listener to move on to main activity for the user item clicked.
         public void bind(final ChatContact chatContact, final ChatItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {

@@ -1,3 +1,10 @@
+/*********************************************************
+ *     Author : Navjit Kaur
+ *
+ *     This entity class is to provide the list of users
+ *     available to create a new chat with and current user.
+ **********************************************************/
+
 package com.example.navjit.konnect.model;
 
 import java.util.List;

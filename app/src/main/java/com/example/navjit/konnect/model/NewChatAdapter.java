@@ -1,3 +1,9 @@
+/***************************************************************************
+ *     Author : Navjit Kaur
+ *
+ *     This entity class is to load the recycler view in new chat activity.
+ ***************************************************************************/
+
 package com.example.navjit.konnect.model;
 
 import android.support.annotation.NonNull;
@@ -6,10 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.example.navjit.konnect.R;
-
-import java.util.List;
 
 public class NewChatAdapter extends RecyclerView.Adapter<NewChatAdapter.MyViewHolder>  {
 
@@ -21,6 +24,7 @@ public class NewChatAdapter extends RecyclerView.Adapter<NewChatAdapter.MyViewHo
         this.listener = listener;
     }
 
+    //create a new view
     @Override
     public NewChatAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.new_chat_users_item,parent,false);
@@ -28,6 +32,7 @@ public class NewChatAdapter extends RecyclerView.Adapter<NewChatAdapter.MyViewHo
         return viewHolder;
     }
 
+    //get element from the new chat engine at that position and replace the content of view with that element
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ChatUser user = newChatEngine.getNewChatUser(position);
@@ -36,6 +41,7 @@ public class NewChatAdapter extends RecyclerView.Adapter<NewChatAdapter.MyViewHo
         holder.bind(user,listener);
     }
 
+    //get the size of dataset from new chat engine
     @Override
     public int getItemCount() {
         return newChatEngine.getNewChatUsers().size();
@@ -54,6 +60,7 @@ public class NewChatAdapter extends RecyclerView.Adapter<NewChatAdapter.MyViewHo
             username = view.findViewById(R.id.textViewUsername);
         }
 
+        //binding the listener to move on to main activity for the user item clicked.
         public void bind(final ChatUser user, final ChatItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {

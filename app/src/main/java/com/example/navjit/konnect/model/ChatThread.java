@@ -1,3 +1,9 @@
+/**************************************************************
+ *     Author : Navjit Kaur
+ *
+ *     This java bean is mapping the thread in firebase.
+ ***************************************************************/
+
 package com.example.navjit.konnect.model;
 
 public class ChatThread {

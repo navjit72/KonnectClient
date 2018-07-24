@@ -1,9 +1,14 @@
+/******************************************************************
+ *     Author : Navjit Kaur
+ *
+ *     This java bean is mapping the user login details in firebase.
+ *******************************************************************/
+
 package com.example.navjit.konnect.model;
 
 import java.io.Serializable;
 
 public class ChatUser implements Serializable {
-    //private int id;
     private String userName;
     private String firstName;
     private String lastName;

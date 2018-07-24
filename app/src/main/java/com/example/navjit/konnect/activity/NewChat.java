@@ -84,7 +84,7 @@ public class NewChat extends AppCompatActivity {
         //removing the users who had chat with current user from the list of all users.
         users.removeAll(usersNotToDisplay);
 
-        //filtering the list
+        //filtering the list to fetch only the instructor and students.
         users = users.stream()
                 .filter(line -> line.getUserType().toLowerCase().equals("student") ||
                         line.getUserType().toLowerCase().equals("instructor"))

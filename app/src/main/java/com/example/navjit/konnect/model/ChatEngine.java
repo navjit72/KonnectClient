@@ -1,9 +1,12 @@
+/*********************************************************
+ *     Author : Navjit Kaur
+ *
+ *     This entity class is to provide the list of users
+ *     available to chat and current user.
+ **********************************************************/
+
 package com.example.navjit.konnect.model;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChatEngine {
