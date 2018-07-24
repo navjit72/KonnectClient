@@ -1,8 +1,13 @@
+/****************************************************************
+ *     Author : Navjit Kaur
+ *
+ *     This entity class is to store the fields combined from
+ *     chat user and chat thread to display the last message sent.
+ *****************************************************************/
+
 package com.example.navjit.konnect.model;
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

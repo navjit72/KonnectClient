@@ -1,10 +1,16 @@
+/****************************************************************************************
+ *     Author : Navjit Kaur
+ *     Modified by : Harshdeep Singh
+ *
+ *     This activity displays all the users with which the current user has a chat with.
+ *******************************************************************************************/
+
 package com.example.navjit.konnect.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -62,8 +68,8 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
-            mFirebaseAdapter;
+    private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
+
     private static String THREAD_ID;
     private ChatUser currentUser;
 
@@ -76,21 +82,18 @@ public class MainActivity extends AppCompatActivity
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private String mUsername;
     private String mPhotoUrl;
-    private SharedPreferences mSharedPreferences;
-    private GoogleApiClient mGoogleApiClient;
-    //private static final String MESSAGE_URL = "http://friendlychat.firebase.google.com/message/";
+    // private SharedPreferences mSharedPreferences;
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private ProgressBar mProgressBar;
     private EditText mMessageEditText;
     private ImageView mAddMessageImageView;
     String otherUserName;
     String otherUserFirstName;
     String otherUserLastName;
     private SharedPreferences userPreferences;
-    ValueEventListener valueEventListener;
+    //ValueEventListener valueEventListener;
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         userPreferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
         if (bundle != null) {
-            THREAD_ID= bundle.getString("Thread");
+            THREAD_ID = bundle.getString("Thread");
             currentUser = (ChatUser) getIntent().getSerializableExtra("Current User");
             mUsername = currentUser.getFirstName() + " " + currentUser.getLastName();
             otherUserName = bundle.getString("Other UserName");
@@ -124,17 +127,12 @@ public class MainActivity extends AppCompatActivity
             otherUserLastName = bundle.getString("Other User LastName");
         }
         this.setTitle(otherUserFirstName + " " + otherUserLastName);
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        // Set default username is anonymous.
-        // Initialize Firebase Auth
+        // mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        mProgressBar = findViewById(R.id.progressBar);
+        //mProgressBar = findViewById(R.id.progressBar);
 
-        //Modify your MainActivity's onCreate method by replacing mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-        // with the code defined below. This code initially adds all existing messages and then listens for new child
-        // entries under the messages path in your Firebase Realtime Database. It adds a new element to the UI for each
-        // message:
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference.child(THREAD_ID);
@@ -149,6 +147,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        //getting all user details from firebase in loginDetails.
         mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -156,7 +155,7 @@ public class MainActivity extends AppCompatActivity
                 Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
                 ArrayList<ChatUser> loginDetails = new ArrayList<>();
 
-                for(DataSnapshot snap : loginChildren){
+                for (DataSnapshot snap : loginChildren) {
                     ChatUser chatUser = snap.getValue(ChatUser.class);
 
                     loginDetails.add(chatUser);
@@ -168,6 +167,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //creating layout for messages including the user photos and populating the layout inflator
         DatabaseReference messagesRef = mFirebaseDatabaseReference.child(THREAD_ID);
         FirebaseRecyclerOptions<FriendlyMessage> options =
                 new FirebaseRecyclerOptions.Builder<FriendlyMessage>()
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity
             protected void onBindViewHolder(final MessageViewHolder viewHolder,
                                             int position,
                                             FriendlyMessage friendlyMessage) {
-                mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                // mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 if (friendlyMessage.getText() != null) {
 
                     if (isCurrentUserSender(friendlyMessage)) {
@@ -193,9 +193,7 @@ public class MainActivity extends AppCompatActivity
                         configureLayoutForReceiver(viewHolder, friendlyMessage);
                     }
 
-                }
-
-                else if (friendlyMessage.getImageUrl() != null) {
+                } else if (friendlyMessage.getImageUrl() != null) {
                     String imageUrl = friendlyMessage.getImageUrl();
                     if (imageUrl.startsWith("gs://")) {
                         StorageReference storageReference = FirebaseStorage.getInstance()
@@ -241,6 +239,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        //scrolling to last to view the last message
         mFirebaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
@@ -259,19 +258,18 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //setting adapter and layout manager to recycler view
         mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
-
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
-
-
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        //mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
 
+        //to enable disable send button on text change
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -290,13 +288,17 @@ public class MainActivity extends AppCompatActivity
             public void afterTextChanged(Editable editable) {
             }
         });
+
+        //disabling the ability to send message on broadcast if the user is student
         mAddMessageImageView = (ImageView) findViewById(R.id.addMessageImageView);
         mSendButton = (Button) findViewById(R.id.sendButton);
-        if(THREAD_ID.equals("broadcast") && currentUser.getUserType().equals("student")){
+        if (THREAD_ID.equals("broadcast") && currentUser.getUserType().equals("student")) {
             mAddMessageImageView.setVisibility(View.GONE);
             mSendButton.setVisibility(View.GONE);
             mMessageEditText.setVisibility(View.GONE);
         }
+
+        //sending the message on clicking send button
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -310,6 +312,8 @@ public class MainActivity extends AppCompatActivity
                 mMessageEditText.setText("");
             }
         });
+
+        //opening local storage to send an attachment
         mAddMessageImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -322,10 +326,12 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    //finding if the message sent by current user.
     private boolean isCurrentUserSender(FriendlyMessage friendlyMessage) {
         return friendlyMessage.getName().equals(mUsername);
     }
 
+    //creating layout for receiver
     private void configureLayoutForReceiver(MessageViewHolder viewHolder, FriendlyMessage friendlyMessage) {
         viewHolder.receivedMessengerImageView.setVisibility(View.VISIBLE);
         viewHolder.sentMessengerImageView.setVisibility(GONE);
@@ -338,6 +344,7 @@ public class MainActivity extends AppCompatActivity
         viewHolder.messengerTextView.setLayoutParams(params);
     }
 
+    //creating layout for sender
     private void configureLayoutForSender(MessageViewHolder viewHolder, FriendlyMessage friendlyMessage) {
         viewHolder.sentMessengerImageView.setVisibility(View.VISIBLE);
         viewHolder.receivedMessengerImageView.setVisibility(GONE);
@@ -356,8 +363,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in.
-        // TODO: Add code to check if user is signed in.
     }
 
     @Override
@@ -377,19 +382,26 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
+    //populating menu on the basis of usertype
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        if(currentUser.getUserType().equals("student")) {
+        //if user is student the meeting invite button will be disabled.
+        if (currentUser.getUserType().equals("student")) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.main_menu, menu);
             menu.findItem(R.id.meeting_invite).setVisible(false);
+        } else {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.main_menu, menu);
         }
         return true;
     }
 
+    //providing actions based on item selected from overflow menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            //on signing out user session is closed.
             case R.id.sign_out_menu:
                 mFirebaseAuth.signOut();
                 SharedPreferences.Editor editor = userPreferences.edit();
@@ -399,6 +411,8 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 return true;
+
+            //moving on to meeting invite activity on selecting meeting invite iem from menu
             case R.id.meeting_invite:
                 Bundle bundle = new Bundle();
                 bundle.putString("User", mUsername);
@@ -408,46 +422,37 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // An unresolvable error has occurred and Google APIs will not be available.
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
+    //on creating a new chat if user does not send any message and go back then the newly created thread is deleted.
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Log.d("thread ID", "thread id : " + THREAD_ID);
-        Log.d("Sender","sender username : " + currentUser.getUserName());
-        Log.d("Receiver", "receiver username : "  + otherUserName);
-
-        if(mFirebaseDatabaseReference.child(THREAD_ID)==null){
-            Log.d("Thread id","null");
-        }
-        else {
-            Log.d("Thread id", "not null");
-        }
-
         mFirebaseDatabaseReference.child(THREAD_ID).addListenerForSingleValueEvent(new ValueEventListener() {
-            Long cnt=0L;
+            Long cnt = 0L;
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("MainActivity","msg : "+ dataSnapshot.getValue());
-                if(dataSnapshot.getValue() == null){
+                if (dataSnapshot.getValue() == null) {
                     mFirebaseDatabaseReference.child("threadCounter").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {;
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //getting current threadcounter value from database
                             cnt = Long.parseLong(dataSnapshot.getValue().toString());
-                            Log.d("thread counter","cnt : " + cnt);
+                            //removing that particular thread with the current threadcounter value.
                             mFirebaseDatabaseReference.child("thread").child(cnt.toString()).removeValue();
                             cnt -= 1;
+                            //setting value of threadcounter with decremented value
                             mFirebaseDatabaseReference.child("threadCounter").setValue(cnt);
                         }
 
                         @Override
-                        public void onCancelled( DatabaseError databaseError) {
+                        public void onCancelled(DatabaseError databaseError) {
 
                         }
                     });
@@ -459,9 +464,11 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        Intent chatListIntent = new Intent(this,ChatListActivity.class);
+
+        //moving back to chat list
+        Intent chatListIntent = new Intent(this, ChatListActivity.class);
         chatListIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        chatListIntent.putExtra("Current User",currentUser);
+        chatListIntent.putExtra("Current User", currentUser);
         startActivity(chatListIntent);
     }
 }

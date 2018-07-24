@@ -1,3 +1,9 @@
+/*************************************************************************
+ *     Author : Harshdeep Singh
+ *
+ *     This activity aids the instructor in creating the meeting invite.
+ **************************************************************************/
+
 package com.example.navjit.konnect.activity;
 
 import android.app.DatePickerDialog;

@@ -1,3 +1,9 @@
+/********************************************************************
+ *     Author : Harshdeep Singh
+ *
+ *     This activity displays is the landing page to login into app.
+ ********************************************************************/
+
 package com.example.navjit.konnect.activity;
 
 import android.content.DialogInterface;
@@ -13,7 +19,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.example.navjit.konnect.R;
 import com.example.navjit.konnect.model.ChatUser;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -25,7 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 

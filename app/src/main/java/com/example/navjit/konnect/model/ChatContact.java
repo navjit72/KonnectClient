@@ -1,3 +1,10 @@
+/****************************************************************
+ *     Author : Navjit Kaur
+ *
+ *     This entity class is to store the fields combined from
+ *     chat user and chat thread to display the last message sent.
+ *****************************************************************/
+
 package com.example.navjit.konnect.model;
 
 import java.io.Serializable;

@@ -1,6 +1,12 @@
+/****************************************************************************************
+ *     Author : Navjit Kaur
+ *     Modified by : Harshdeep Singh
+ *
+ *     This activity displays all the users with which the current user has a chat with.
+*******************************************************************************************/
+
 package com.example.navjit.konnect.activity;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,7 +24,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import com.example.navjit.konnect.model.ChatAdapter;
 import com.example.navjit.konnect.model.ChatContact;
 import com.example.navjit.konnect.model.ChatEngine;
@@ -39,14 +44,14 @@ import java.util.ArrayList;
 public class ChatListActivity extends AppCompatActivity {
 
     private DatabaseReference mFirebaseDatabaseReference;
-    ArrayList<ChatThread> chatThreadDetails = new ArrayList<>();
-    ArrayList<ChatUser> users = new ArrayList<>();
-    ArrayList<ChatUser> secondUsers = new ArrayList<>();
-    ArrayList<FriendlyMessage> friendlyMessageList = new ArrayList<>();
-    ArrayList<ChatContact> contactList = new ArrayList<>();
+    ArrayList<ChatThread> chatThreadDetails = new ArrayList<>();    //List to store thread details of all chats that the current user has.
+    ArrayList<ChatUser> users = new ArrayList<>();  //List to store all the users.
+    ArrayList<ChatUser> secondUsers = new ArrayList<>();    //List to store the users that the current user has a chat with.
+    ArrayList<FriendlyMessage> friendlyMessageList = new ArrayList<>();     //List to store details of all the messages.
+    ArrayList<ChatContact> contactList = new ArrayList<>();     //List to store the users that has chat with current user with the last message sent.
 
 
-    ChatUser userOne = new ChatUser();
+    ChatUser userOne = new ChatUser();  //current user object.
 
     RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
@@ -61,11 +66,8 @@ public class ChatListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //storing the details of current user in shared preferences to avoid logging in everytime.
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-//        Bundle bundle = getIntent().getExtras();
-//        if (bundle != null) {
-//            userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
-//        }
         userPreferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
         Gson gson = new Gson();
         String userString = userPreferences.getString("loggedInUser", "");
@@ -85,12 +87,12 @@ public class ChatListActivity extends AppCompatActivity {
                     users.add(user);
                 }
 
+                //fetching the all the threads of current user and storing in the chat thread list.
                 DataSnapshot threadSnap = dataSnapshot.child("thread");
                 Iterable<DataSnapshot> threadDetails = threadSnap.getChildren();
 
                 for (DataSnapshot snap : threadDetails) {
                     ChatThread chatThread = snap.getValue(ChatThread.class);
-                    //userOne = (ChatUser) getIntent().getSerializableExtra("Current User");
                     if(chatThread.getThreadId().equals("broadcast")){
                         chatThreadDetails.add(chatThread);
                     }
@@ -98,6 +100,8 @@ public class ChatListActivity extends AppCompatActivity {
                         chatThreadDetails.add(chatThread);
                     }
                 }
+
+                //populating the second users list with the users with which current user has chats.
                 for (ChatThread t : chatThreadDetails) {
                     String secondUsername = "";
                     if (t.getMessengerOne().equals(userOne.getUserName())) {
@@ -110,6 +114,8 @@ public class ChatListActivity extends AppCompatActivity {
                             secondUsers.add(u);
                     }
                 }
+
+                //populating the messages list with all the messages.
                 FriendlyMessage friendlyMessage = null;
                 for (ChatThread chatThread : chatThreadDetails) {
                     DataSnapshot messagesSnap = dataSnapshot.child(chatThread.getThreadId());
@@ -120,6 +126,8 @@ public class ChatListActivity extends AppCompatActivity {
                     friendlyMessageList.add(friendlyMessage);
                     Log.d("Friendly Message", "Friendly Message " + friendlyMessage.getThreadId() + " : " + friendlyMessage.getText() + " "+friendlyMessage.getName());
                 }
+
+                //populating the contact list with the second users details with the last message sent.
                 for (int i = 0; i < friendlyMessageList.size(); i++) {
                     ChatContact contact = new ChatContact();
                     contact.setFirstName(secondUsers.get(i).getFirstName());
@@ -129,6 +137,8 @@ public class ChatListActivity extends AppCompatActivity {
                     contact.setUserName(secondUsers.get(i).getUserName());
                     contactList.add(contact);
                 }
+
+                //displaying the second users with the last message sent in the recycler view of chat list activity.
                 engine = new ChatEngine(userOne, contactList);
                 recyclerView = findViewById(R.id.recyclerViewChatList);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -156,7 +166,11 @@ public class ChatListActivity extends AppCompatActivity {
 
             }
         };
+
+        //calling the value event listener again to update the recycler view.
         update();
+
+        //navigating to new chat activity on click of floating button.
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,14 +191,13 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //    Toast.makeText(this, "OnResume", Toast.LENGTH_LONG).show();
+        //refreshing the recycler view by interacting with firebase on activity getting resumed.
         update();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //  Toast.makeText(this, "OnPause", Toast.LENGTH_LONG).show();
         mFirebaseDatabaseReference.removeEventListener(valueEventListener);
     }
 
@@ -197,7 +210,7 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        // l̥Toast.makeText(this, "OnRestart", Toast.LENGTH_LONG).show();
+        //refreshing recycler view by interacting firebase on restarting the activity.
         update();
     }
 
@@ -205,10 +218,7 @@ public class ChatListActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this,R.style.AlertDialogTheme);
-        // Setting Alert Dialog Title
         alertDialogBuilder.setTitle("Confirm Exit");
-        // Icon Of Alert Dialog
-        //alertDialogBuilder.setIcon(R.drawable.);
         // Setting Alert Dialog Message
         alertDialogBuilder.setMessage("Are you sure you want to exit?");
         alertDialogBuilder.setCancelable(false);
@@ -219,7 +229,6 @@ public class ChatListActivity extends AppCompatActivity {
             public void onClick(DialogInterface arg0, int arg1) {
                 ChatListActivity.super.onBackPressed();
                 finishAndRemoveTask();
-                //System.exit(0);
             }
         });
 
@@ -231,18 +240,17 @@ public class ChatListActivity extends AppCompatActivity {
         alertDialogBuilder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(),"You clicked Cancel",Toast.LENGTH_SHORT).show();
+
             }
         });
 
         alertDialogBuilder.show();
 
-//        AlertDialog alertDialog = alertDialogBuilder.create();
-//        alertDialog.show();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //filling up the overflow menu
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.meeting_invite).setVisible(false);
@@ -264,5 +272,3 @@ public class ChatListActivity extends AppCompatActivity {
         }
     }
 }
-
-//TODO overflow options in inflator
