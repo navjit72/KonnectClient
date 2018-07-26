@@ -49,9 +49,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import cz.msebera.android.httpclient.HttpHeaders;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.view.View.GONE;
@@ -89,6 +97,7 @@ public class MainActivity extends AppCompatActivity
     String otherUserName;
     String otherUserFirstName;
     String otherUserLastName;
+    String otherUserToken;
     private SharedPreferences userPreferences;
     ValueEventListener valueEventListener;
 
@@ -122,6 +131,7 @@ public class MainActivity extends AppCompatActivity
             otherUserName = bundle.getString("Other UserName");
             otherUserFirstName = bundle.getString("Other User FirstName");
             otherUserLastName = bundle.getString("Other User LastName");
+            otherUserToken = bundle.getString("Other User Token");
         }
         this.setTitle(otherUserFirstName + " " + otherUserLastName);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -307,6 +317,46 @@ public class MainActivity extends AppCompatActivity
                         null /* no image */, THREAD_ID);
                 mFirebaseDatabaseReference.child(THREAD_ID)
                         .push().setValue(friendlyMessage);
+
+                String url = "https://fcm.googleapis.com/fcm/send";
+                AsyncHttpClient client = new AsyncHttpClient();
+                client.addHeader(HttpHeaders.AUTHORIZATION, "key=AIzaSyAiVsW00ommP7msOLZyiIrRvwMjfAeMs0A");
+                client.addHeader(HttpHeaders.CONTENT_TYPE, RequestParams.APPLICATION_JSON);
+                try {
+                    JSONArray registrationTokens = new JSONArray();
+
+                    registrationTokens.put(otherUserToken);
+
+                    JSONObject message = new JSONObject();
+                    message.put("registration_ids", registrationTokens);
+
+                    JSONObject notification = new JSONObject();
+                    notification.put("title", friendlyMessage.getName());
+                    notification.put("body", friendlyMessage.getText());
+
+                    message.put("notification", notification);
+
+                    StringEntity entity = new StringEntity(message.toString());
+
+                    client.post(getApplicationContext(), url, entity, RequestParams.APPLICATION_JSON, new TextHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
+
+                            Log.i(TAG, responseString);
+                        }
+
+                        @Override
+                        public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+
+                            Log.i(TAG, responseString);
+                        }
+                    });
+
+                } catch (Exception e) {
+
+                }
+
+
                 mMessageEditText.setText("");
             }
         });
