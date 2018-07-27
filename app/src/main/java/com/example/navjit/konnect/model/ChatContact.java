@@ -1,5 +1,5 @@
 /****************************************************************
- *     Author : Navjit Kaur
+ *     Author : ChandraShekhar
  *
  *     This entity class is to store the fields combined from
  *     chat user and chat thread to display the last message sent.

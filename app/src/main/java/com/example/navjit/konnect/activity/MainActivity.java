@@ -55,6 +55,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 
@@ -76,13 +77,10 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     private static final int REQUEST_INVITE = 1;
     private static final int REQUEST_IMAGE = 2;
-    private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
-    public static final String ANONYMOUS = "anonymous";
     private static final String MESSAGE_SENT_EVENT = "message_sent";
     private String mUsername;
     private String mPhotoUrl;
-    // private SharedPreferences mSharedPreferences;
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -93,7 +91,6 @@ public class MainActivity extends AppCompatActivity
     String otherUserFirstName;
     String otherUserLastName;
     private SharedPreferences userPreferences;
-    //ValueEventListener valueEventListener;
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         TextView messageTextView;
@@ -131,7 +128,6 @@ public class MainActivity extends AppCompatActivity
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        //mProgressBar = findViewById(R.id.progressBar);
 
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -184,7 +180,6 @@ public class MainActivity extends AppCompatActivity
             protected void onBindViewHolder(final MessageViewHolder viewHolder,
                                             int position,
                                             FriendlyMessage friendlyMessage) {
-                // mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 if (friendlyMessage.getText() != null) {
 
                     if (isCurrentUserSender(friendlyMessage)) {
@@ -193,7 +188,7 @@ public class MainActivity extends AppCompatActivity
                         configureLayoutForReceiver(viewHolder, friendlyMessage);
                     }
 
-                } else if (friendlyMessage.getImageUrl() != null) {
+                } else {
                     String imageUrl = friendlyMessage.getImageUrl();
                     if (imageUrl.startsWith("gs://")) {
                         StorageReference storageReference = FirebaseStorage.getInstance()
@@ -264,8 +259,6 @@ public class MainActivity extends AppCompatActivity
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
-
-        //mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
 
@@ -407,7 +400,6 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = userPreferences.edit();
                 editor.remove("loggedInUser");
                 editor.apply();
-                mUsername = ANONYMOUS;
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 return true;
@@ -471,4 +463,57 @@ public class MainActivity extends AppCompatActivity
         chatListIntent.putExtra("Current User", currentUser);
         startActivity(chatListIntent);
     }
-}
+
+    //sending image as message
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_IMAGE) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    final Uri uri = data.getData();
+
+                    FriendlyMessage tempMessage = new FriendlyMessage(null, mUsername, mPhotoUrl, uri.toString(),THREAD_ID);
+                    mFirebaseDatabaseReference.child(THREAD_ID).push()
+                            .setValue(tempMessage, new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(DatabaseError databaseError,
+                                                       DatabaseReference databaseReference) {
+                                    if (databaseError == null) {
+                                        String key = databaseReference.getKey();
+                                        StorageReference storageReference =
+                                                FirebaseStorage.getInstance()
+                                                        .getReference(mFirebaseUser.getUid())
+                                                        .child(key)
+                                                        .child(uri.getLastPathSegment());
+
+                                        putImageInStorage(storageReference, uri, key);
+                                    } else {
+                                        Log.w(TAG, "Unable to write message to database.",
+                                                databaseError.toException());
+                                    }
+                                }
+                            });
+                }
+            }
+        }
+    }
+
+    //storing image path in firebase
+    private void putImageInStorage(StorageReference storageReference, Uri uri, final String key) {
+        storageReference.putFile(uri).addOnCompleteListener(MainActivity.this,
+                new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            FriendlyMessage friendlyMessage =
+                                    new FriendlyMessage(null, mUsername, mPhotoUrl, task.getResult().getMetadata().getPath(),THREAD_ID);
+                            mFirebaseDatabaseReference.child(THREAD_ID).child(key).setValue(friendlyMessage);
+                        } else {
+                            Log.w(TAG, "Image upload task was not successful.", task.getException());
+                        }
+                    }
+                });
+        }
+    }
