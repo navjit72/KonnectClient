@@ -1,3 +1,9 @@
+/***********************************************************
+ *     Author : ChandraShekhar
+ *
+ *     This java bean is mapping the messages in firebase.
+ ************************************************************/
+
 package com.example.navjit.konnect.model;
 
 public class FriendlyMessage {

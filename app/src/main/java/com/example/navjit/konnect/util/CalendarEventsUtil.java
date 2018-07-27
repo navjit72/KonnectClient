@@ -1,10 +1,12 @@
+/***************************************************************************
+ *     Author : Harshdeep Singh
+ *
+ *     This utility class is to handle events for meeting invite.
+ ***************************************************************************/
+
 package com.example.navjit.konnect.util;
 
 import android.content.Context;
-
-/**
- * Created by harshdeepsingh on 7/2/18.
- */
 
 public class CalendarEventsUtil {
 
