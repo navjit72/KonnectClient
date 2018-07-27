@@ -1,6 +1,5 @@
 package com.example.navjit.konnect.activity;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,13 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.navjit.konnect.R;
 import com.example.navjit.konnect.model.ChatAdapter;
 import com.example.navjit.konnect.model.ChatContact;
 import com.example.navjit.konnect.model.ChatEngine;
 import com.example.navjit.konnect.model.ChatItemClickListener;
 import com.example.navjit.konnect.model.ChatThread;
 import com.example.navjit.konnect.model.ChatUser;
-import com.example.navjit.konnect.R;
 import com.example.navjit.konnect.model.FriendlyMessage;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -127,6 +126,7 @@ public class ChatListActivity extends AppCompatActivity {
                     contact.setThreadId(friendlyMessageList.get(i).getThreadId());
                     contact.setLastMessage(friendlyMessageList.get(i).getText());
                     contact.setUserName(secondUsers.get(i).getUserName());
+                    contact.setDeviceToken(secondUsers.get(i).getDeviceToken());
                     contactList.add(contact);
                 }
                 engine = new ChatEngine(userOne, contactList);
@@ -141,6 +141,7 @@ public class ChatListActivity extends AppCompatActivity {
                         contactIntent.putExtra("Other User FirstName", contact.getFirstName());
                         contactIntent.putExtra("Other User LastName", contact.getLastName());
                         contactIntent.putExtra("Thread", contact.getThreadId());
+                        contactIntent.putExtra("Other User Token", contact.getDeviceToken());
                         startActivity(contactIntent);
                     }
 

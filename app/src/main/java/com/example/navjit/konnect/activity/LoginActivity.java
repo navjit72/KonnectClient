@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,9 +26,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+
+;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -39,11 +43,14 @@ public class LoginActivity extends AppCompatActivity {
     Button buttonSignIn;
     private FirebaseAuth mAuth;
     private SharedPreferences userPreferences;
+    private String deviceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
@@ -77,6 +84,9 @@ public class LoginActivity extends AppCompatActivity {
         for (ChatUser l : loginDetails) {
             if (l.getUserName().equals(editTextUsername.getText().toString()) && !l.getUserType().equals("userType")) {
                 if (l.getPassword().equals(editTextPassword.getText().toString())) {
+                    l.setDeviceId(deviceId);
+                    l.setDeviceToken(FirebaseInstanceId.getInstance().getToken());
+                    updateDeviceDetails(l);
                     Gson gson = new Gson();
                     String userString = gson.toJson(l);
                     SharedPreferences.Editor editor = userPreferences.edit();
@@ -90,6 +100,29 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void updateDeviceDetails(ChatUser l) {
+        mFirebaseDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot loginSnap = dataSnapshot.child("login");
+                Iterable<DataSnapshot> loginChildren = loginSnap.getChildren();
+
+                for (DataSnapshot snap : loginChildren) {
+                    ChatUser login = snap.getValue(ChatUser.class);
+                    if (login.getUserName().equals(l.getUserName())) {
+                        mFirebaseDatabaseReference.child("login/" + snap.getKey() + "/deviceId").setValue(l.getDeviceId());
+                        mFirebaseDatabaseReference.child("login/" + snap.getKey() + "/deviceToken").setValue(l.getDeviceToken());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void goToChatDetails(ChatUser l) {

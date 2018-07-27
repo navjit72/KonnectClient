@@ -10,17 +10,36 @@ public class ChatUser implements Serializable {
     private String userType;
     private String password;
     private String email;
+    private String deviceId;
+    private String deviceToken;
 
     public ChatUser() {
     }
 
-    public ChatUser(String userName, String firstName, String lastName, String userType, String password, String email) {
+    public ChatUser(String userName, String firstName, String lastName, String userType, String password, String email, String deviceId) {
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.userType = userType;
         this.password = password;
         this.email = email;
+        this.deviceId = deviceId;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public String getUserName() {

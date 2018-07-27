@@ -8,6 +8,7 @@ public class ChatContact implements Serializable{
     private String lastName;
     private String threadId;
     private String lastMessage;
+    private String deviceToken;
 
     public ChatContact(){}
 
@@ -57,5 +58,13 @@ public class ChatContact implements Serializable{
 
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }
