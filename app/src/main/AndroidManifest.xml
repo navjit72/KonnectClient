@@ -3,7 +3,7 @@
     package="com.example.navjit.konnect">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
