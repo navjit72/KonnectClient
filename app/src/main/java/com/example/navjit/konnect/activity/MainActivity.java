@@ -456,7 +456,9 @@ public class MainActivity extends AppCompatActivity
             //moving on to meeting invite activity on selecting meeting invite iem from menu
             case R.id.meeting_invite:
                 Bundle bundle = new Bundle();
-                bundle.putString("User", mUsername);
+                bundle.putString("User", otherUserFirstName + " " + otherUserLastName);
+                bundle.putString("Other User Token", otherUserToken);
+                bundle.putString("Current User", currentUser.getFirstName() + " " + currentUser.getLastName());
                 CreateMeetingActivity.launch(this, bundle);
             default:
                 return super.onOptionsItemSelected(item);
