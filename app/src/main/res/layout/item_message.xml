@@ -29,7 +29,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:background="@drawable/rounded_rectangle"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ImageView
                 android:id="@+id/messageImageView"
@@ -45,6 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
+                android:textColor="@color/messengerName"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </LinearLayout>
